@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../models/tasks.dart';
+import '../../data/models/tasks.dart';
 import '../utils/aap_theme/theme.dart';
 
 class TaskTile extends StatelessWidget {

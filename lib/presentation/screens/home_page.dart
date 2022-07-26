@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_calendar/utils/notifications.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../data/models/tasks.dart';
+import '../cubit/events_cubit.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:day_night_switcher/day_night_switcher.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:date_picker_timeline/date_picker_timeline.dart';
-import '../../controllers/task_controller.dart';
-import '../models/tasks.dart';
 import '../utils/aap_theme/get_theme_mode.dart';
 import '../utils/aap_theme/theme.dart';
+import '../utils/notifications.dart';
 import '../widgets/app_bar_widget.dart';
 import '../widgets/button_widget.dart';
 import '../widgets/task_tile.dart';
@@ -24,8 +25,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final _taskController = Get.put(TaskController());
-
   DateTime _selectedDate = DateTime.now();
 
   final DatePickerController _controller = DatePickerController();
@@ -34,8 +33,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-    _taskController.getTask();
-
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       _controller.jumpToSelection();
     });
@@ -81,39 +78,21 @@ class _HomePageState extends State<HomePage> {
   }
 
   _showTasks() {
-    return Expanded(child: Obx(() {
-      return ListView.builder(
-          itemCount: _taskController.taskList.length,
-          itemBuilder: (_, int index) {
-            print(_taskController.taskList.length);
-            Task task = _taskController.taskList[index];
+    return Expanded(
+        child: BlocBuilder<EventsCubit, TodoState>(builder: (context, state) {
+      if (state is TodoInitial) {
+        context.read<EventsCubit>().getData();
+        return CircularProgressIndicator();
+      } else if (state is TodoLoaded) {
+        if (state.events.isEmpty) {
+          return Text("No Events");
+        }
+        return ListView.builder(
+            itemCount: state.events.length,
+            itemBuilder: (_, int index) {
+              Task task = state.events[index];
 
-            if (task.repeat == 'Daily') {
-              return AnimationConfiguration.staggeredList(
-                  position: index,
-                  child: SlideAnimation(
-                    child: FadeInAnimation(
-                      child: Row(
-                        children: [
-                          GestureDetector(
-                            onTap: () => _showBottomSheet(context, task, index),
-                            child: TaskTile(task),
-                          )
-                        ],
-                      ),
-                    ),
-                  ));
-            }
-            if (task.repeat == 'Weekly') {
-              if (task.date!.weekday == _selectedDate.weekday) {
-                if (toDouble(task.startTime as TimeOfDay) >
-                    toDouble(TimeOfDay.now())) {
-                  showWeeklyTaskReminderNotification(
-                    task.startTime!.hour,
-                    task.startTime!.minute,
-                    task.date!.weekday,
-                  );
-                }
+              if (task.repeat == 'Daily') {
                 return AnimationConfiguration.staggeredList(
                     position: index,
                     child: SlideAnimation(
@@ -130,36 +109,69 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ));
               }
-            }
-            if (DateFormat.yMd().format(task.date as DateTime) ==
-                DateFormat.yMd().format(_selectedDate)) {
-              if (toDouble(task.startTime as TimeOfDay) >
-                  toDouble(TimeOfDay.now())) {
-                showTaskReminderNotification(
-                    task.startTime!.hour,
-                    task.startTime!.minute,
-                    task.date!.day,
-                    task.date!.month,
-                    task.date!.year);
+              if (task.repeat == 'Weekly') {
+                if (task.date!.weekday == _selectedDate.weekday) {
+                  if (toDouble(task.startTime as TimeOfDay) >
+                      toDouble(TimeOfDay.now())) {
+                    showWeeklyTaskReminderNotification(
+                      task.startTime!.hour,
+                      task.startTime!.minute,
+                      task.date!.weekday,
+                    );
+                  }
+                  return AnimationConfiguration.staggeredList(
+                      position: index,
+                      child: SlideAnimation(
+                        child: FadeInAnimation(
+                          child: Row(
+                            children: [
+                              GestureDetector(
+                                onTap: () =>
+                                    _showBottomSheet(context, task, index),
+                                child: TaskTile(task),
+                              )
+                            ],
+                          ),
+                        ),
+                      ));
+                }
               }
-              return AnimationConfiguration.staggeredList(
-                  position: index,
-                  child: SlideAnimation(
-                    child: FadeInAnimation(
-                      child: Row(
-                        children: [
-                          GestureDetector(
-                            onTap: () => _showBottomSheet(context, task, index),
-                            child: TaskTile(task),
-                          )
-                        ],
+              if (DateFormat.yMd().format(task.date as DateTime) ==
+                  DateFormat.yMd().format(_selectedDate)) {
+                if (toDouble(task.startTime as TimeOfDay) >
+                    toDouble(TimeOfDay.now())) {
+                  task.startTime!.minute;
+                  task.startTime!.hour;
+                  task.remind;
+                  showTaskReminderNotification(
+                      task.startTime!.hour,
+                      task.startTime!.minute,
+                      task.date!.day,
+                      task.date!.month,
+                      task.date!.year);
+                }
+                return AnimationConfiguration.staggeredList(
+                    position: index,
+                    child: SlideAnimation(
+                      child: FadeInAnimation(
+                        child: Row(
+                          children: [
+                            GestureDetector(
+                              onTap: () =>
+                                  _showBottomSheet(context, task, index),
+                              child: TaskTile(task),
+                            )
+                          ],
+                        ),
                       ),
-                    ),
-                  ));
-            } else {
-              return Container();
-            }
-          });
+                    ));
+              } else {
+                return Container();
+              }
+            });
+      } else {
+        return CircularProgressIndicator();
+      }
     }));
   }
 
@@ -185,16 +197,20 @@ class _HomePageState extends State<HomePage> {
               : _bottomSheetButton(
                   label: "Task Completed",
                   onTap: () {
-                    _taskController.markTaskComplete(index);
-                    Get.back();
+                    // _taskController.markTaskComplete(index);
+                    final eventsCubit = BlocProvider.of<EventsCubit>(context);
+                    eventsCubit.updateData(index);
+                    Navigator.pop(context);
                   },
                   clr: primaryClr,
                   context: context),
           _bottomSheetButton(
               label: "Delete Task",
               onTap: () {
-                _taskController.deleteTask(index);
-                Get.back();
+                // _taskController.deleteTask(index);
+                final eventsCubit = BlocProvider.of<EventsCubit>(context);
+                eventsCubit.deleteData(index);
+                Navigator.pop(context);
               },
               clr: Colors.red,
               context: context),
@@ -307,8 +323,13 @@ class _HomePageState extends State<HomePage> {
           MyButton(
               label: "+ Add Task",
               onTap: () async {
-                await Get.to(() => const AddTaskScreen());
-                _taskController.getTask();
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AddTaskScreen(),
+                  ),
+                );
+                // _taskController.getTask();
               })
         ],
       ),
@@ -316,8 +337,4 @@ class _HomePageState extends State<HomePage> {
   }
 
   double toDouble(TimeOfDay myTime) => myTime.hour + myTime.minute / 60.0;
-
-  get showToast => _themeController.isLightTheme.value
-      ? commonToast("Switched to Light Theme")
-      : commonToast("Switched to Dark Theme");
 }

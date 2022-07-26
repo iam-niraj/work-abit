@@ -1,11 +1,13 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_calendar/widgets/app_bar_widget.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../data/models/tasks.dart';
+import '../cubit/events_cubit.dart';
+import '../utils/aap_theme/theme.dart';
+import 'home_page.dart';
+import '../widgets/app_bar_widget.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import '../../controllers/task_controller.dart';
-import '../models/tasks.dart';
-import '../utils/aap_theme/theme.dart';
 import '../widgets/button_widget.dart';
 import '../widgets/input_field.dart';
 
@@ -17,8 +19,6 @@ class AddTaskScreen extends StatefulWidget {
 }
 
 class _AddTaskScreenState extends State<AddTaskScreen> {
-  final TaskController _taskController = Get.put(TaskController());
-
   DateTime _selectedDate = DateTime.now(); //selected date
 
   String _endTime = "9:30 PM";
@@ -312,7 +312,13 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   _validateDate() {
     if (_titleController.text.isNotEmpty && _noteController.text.isNotEmpty) {
       _addTaskToDb(); // add to database
-      Get.back();
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => HomePage(),
+        ),
+      );
+      ;
     } else if (_titleController.text.isEmpty || _noteController.text.isEmpty) {
       Get.snackbar("Required", "All fields are required!",
           snackPosition: SnackPosition.BOTTOM,
@@ -339,6 +345,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
       repeat: _selectedRepeat,
     );
     print("ID is $value");
-    _taskController.addTask(value);
+    final eventsCubit = BlocProvider.of<EventsCubit>(context);
+    eventsCubit.addData(value);
   }
 }
