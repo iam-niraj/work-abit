@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../data/models/tasks.dart';
+import '../../data/models/events.dart';
 import '../utils/aap_theme/theme.dart';
 
 class TaskTile extends StatelessWidget {
-  final Task? task;
+  final Events? task;
   const TaskTile(this.task);
 
   @override
@@ -15,7 +15,6 @@ class TaskTile extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       child: Container(
         padding: const EdgeInsets.all(16),
-        //  width: SizeConfig.screenWidth * 0.78,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
           color: _getBGClr(task?.color ?? 0),

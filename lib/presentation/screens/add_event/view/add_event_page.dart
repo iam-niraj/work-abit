@@ -1,15 +1,14 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../data/models/tasks.dart';
-import '../cubit/events_cubit.dart';
-import '../utils/aap_theme/theme.dart';
-import 'home_page.dart';
-import '../widgets/app_bar_widget.dart';
+import 'package:flutter_calendar/data/models/events.dart';
+import 'package:flutter_calendar/presentation/screens/show_events/bloc/events_bloc.dart';
+import '../../../utils/aap_theme/theme.dart';
+import '../../../widgets/input_field.dart';
+import '../../../widgets/app_bar_widget.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import '../widgets/button_widget.dart';
-import '../widgets/input_field.dart';
+import '../../../widgets/button_widget.dart';
 
 class AddTaskScreen extends StatefulWidget {
   const AddTaskScreen({Key? key}) : super(key: key);
@@ -19,17 +18,15 @@ class AddTaskScreen extends StatefulWidget {
 }
 
 class _AddTaskScreenState extends State<AddTaskScreen> {
-  DateTime _selectedDate = DateTime.now(); //selected date
+  DateTime _selectedDate = DateTime.now();
 
   String _endTime = "9:30 PM";
-  String _startTime =
-      DateFormat("hh:mm a").format(DateTime.now()).toString(); //time selection
 
-  int _selectedRemind = 5; // initial reminder value
+  int _selectedRemind = 5;
 
   int _selectedColor = 0;
 
-  TimeOfDay? _timeOfDay; // default color
+  TimeOfDay _timeOfDay = TimeOfDay.now();
 
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _noteController = TextEditingController();
@@ -42,6 +39,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   ];
 
   String _selectedRepeat = "None";
+
   List<String> repeatList = [
     "None",
     "Daily",
@@ -49,22 +47,10 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     "Monthly",
   ];
 
-  String finalDate = '';
-
-  var date = DateTime.now().toString();
-
-  getCurrentDate() {
-    var dateParse = DateTime.parse(date);
-
-    var formattedDate = "${dateParse.day}-${dateParse.month}-${dateParse.year}";
-
-    setState(() {
-      finalDate = formattedDate.toString();
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
+    /* final localizations = MaterialLocalizations.of(context);
+    final formattedTimeOfDay = localizations.formatTimeOfDay(_timeOfDay); */
     return Scaffold(
       appBar: MyAppBar(
         widget: GestureDetector(
@@ -110,7 +96,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                   Expanded(
                       child: InputField(
                     title: "Start Time",
-                    hint: _startTime,
+                    hint: _timeOfDay.format(context),
                     widget: IconButton(
                       onPressed: () async {
                         _getTimeFromUser(isStartTime: true);
@@ -229,14 +215,11 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   }
 
   _getTimeFromUser({required bool isStartTime}) async {
-    _timeOfDay = await _showTimePicker();
-    String _formattedTime = _timeOfDay!.format(context);
-    if (_timeOfDay == null) {
-      printError(info: "Cancelled");
-    } else if (isStartTime == true) {
+    _timeOfDay = await _showTimePicker() ?? TimeOfDay.now();
+    String _formattedTime = _timeOfDay.format(context);
+    if (isStartTime == true) {
       setState(() {
         _timeOfDay;
-        _startTime = _formattedTime;
       });
     } else if (isStartTime == false) {
       _timeOfDay;
@@ -247,18 +230,13 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   }
 
   _showTimePicker() {
-    DateTime now = DateTime.now();
     return showTimePicker(
         context: context,
         initialEntryMode: TimePickerEntryMode.input,
-        initialTime: /* TimeOfDay.fromDateTime(
-        now.add(
-          const Duration(minutes: 1),
-        ),
-      ), */
-            TimeOfDay(
-          hour: int.parse(_startTime.split(":")[0]),
-          minute: int.parse(_startTime.split(":")[1].split(" ")[0]),
+        initialTime: TimeOfDay.fromDateTime(
+          DateTime.now().add(
+            Duration(minutes: 1),
+          ),
         ));
   }
 
@@ -312,13 +290,10 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   _validateDate() {
     if (_titleController.text.isNotEmpty && _noteController.text.isNotEmpty) {
       _addTaskToDb(); // add to database
-      Navigator.push(
+      Navigator.pushNamed(
         context,
-        MaterialPageRoute(
-          builder: (context) => HomePage(),
-        ),
+        '/home',
       );
-      ;
     } else if (_titleController.text.isEmpty || _noteController.text.isEmpty) {
       Get.snackbar("Required", "All fields are required!",
           snackPosition: SnackPosition.BOTTOM,
@@ -333,7 +308,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
 
   _addTaskToDb() async {
     print(_timeOfDay);
-    var value = Task(
+    var value = Events(
       title: _titleController.text,
       note: _noteController.text,
       isCompleted: 0,
@@ -344,8 +319,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
       remind: _selectedRemind,
       repeat: _selectedRepeat,
     );
-    print("ID is $value");
-    final eventsCubit = BlocProvider.of<EventsCubit>(context);
-    eventsCubit.addData(value);
+    final eventsCubit = BlocProvider.of<EventsBloc>(context);
+    eventsCubit.add(AddEvent(task: value));
   }
 }

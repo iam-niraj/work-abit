@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 
-part 'tasks.g.dart';
+part 'events.g.dart';
 
-@HiveType(typeId: 0)
-class Task extends HiveObject {
+@HiveType(typeId: 1)
+class Events extends HiveObject {
   @HiveField(0)
   int? id;
 
@@ -35,7 +35,7 @@ class Task extends HiveObject {
   @HiveField(9)
   String? repeat;
 
-  Task({
+  Events({
     this.id,
     this.title,
     this.note,

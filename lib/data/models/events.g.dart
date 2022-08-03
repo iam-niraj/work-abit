@@ -1,27 +1,27 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'tasks.dart';
+part of 'events.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class TaskAdapter extends TypeAdapter<Task> {
+class EventsAdapter extends TypeAdapter<Events> {
   @override
-  final int typeId = 0;
+  final int typeId = 1;
 
   @override
-  Task read(BinaryReader reader) {
+  Events read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return Task(
+    return Events(
       id: fields[0] as int?,
       title: fields[1] as String?,
       note: fields[2] as String?,
       isCompleted: fields[3] as int?,
-      date: fields[4] as DateTime,
+      date: fields[4] as DateTime?,
       startTime: fields[5] as TimeOfDay?,
       endTime: fields[6] as String?,
       color: fields[7] as int?,
@@ -31,7 +31,7 @@ class TaskAdapter extends TypeAdapter<Task> {
   }
 
   @override
-  void write(BinaryWriter writer, Task obj) {
+  void write(BinaryWriter writer, Events obj) {
     writer
       ..writeByte(10)
       ..writeByte(0)
@@ -62,7 +62,7 @@ class TaskAdapter extends TypeAdapter<Task> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is TaskAdapter &&
+      other is EventsAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

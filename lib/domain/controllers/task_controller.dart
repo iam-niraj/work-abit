@@ -1,30 +1,30 @@
 import 'package:hive/hive.dart';
 
-import '../../data/models/tasks.dart';
+import '../../data/models/events.dart';
 
 class TaskController {
   final String _boxName = "user_Tasks";
 
-  Future<int> addTask(Task newTask) async {
-    final box = await Hive.openBox<Task>(_boxName);
-    var result = await box.add(newTask);
+  Future<int> addTask(Events event) async {
+    final box = await Hive.openBox<Events>(_boxName);
+    var result = await box.add(event);
     return result;
   }
 
-  Future<List<Task>> getTask() async {
-    var box = await Hive.openBox<Task>(_boxName);
-    var tasks = box.values.toList();
-    return tasks;
+  Future<List<Events>> getTasks() async {
+    var box = await Hive.openBox<Events>(_boxName);
+    var events = box.values.toList();
+    return events;
   }
 
   Future deleteTask(index) async {
-    var box = await Hive.openBox<Task>(_boxName);
+    var box = await Hive.openBox<Events>(_boxName);
     var result = await box.deleteAt(index);
     return result;
   }
 
   Future markTaskComplete(index) async {
-    var box = await Hive.openBox<Task>(_boxName);
+    var box = await Hive.openBox<Events>(_boxName);
     var i = box.getAt(index);
     i!.isCompleted = 1;
     final result = i.save();

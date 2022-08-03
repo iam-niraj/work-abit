@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_calendar/presentation/cubit/events_cubit.dart';
-import 'package:flutter_calendar/presentation/screens/add_event_page.dart';
-import 'package:flutter_calendar/presentation/utils/aap_theme/theme.dart';
+import 'package:flutter_calendar/data/models/events.dart';
+import 'package:flutter_calendar/data/repositories/task_repositories.dart';
+import 'package:flutter_calendar/presentation/screens/add_event/view/add_event_page.dart';
+import 'package:flutter_calendar/presentation/screens/show_events/bloc/events_bloc.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import '../data/models/time_of_day.dart';
+import '../presentation/utils/aap_theme/get_theme_mode.dart';
+import '../presentation/utils/aap_theme/theme.dart';
 import 'bloc_observer.dart';
-import 'data/models/tasks.dart';
-import 'data/repositories/task_repositories';
-import 'presentation/screens/home_page.dart';
-import 'presentation/utils/aap_theme/get_theme_mode.dart';
+import '../presentation/screens/home/view/home_page.dart';
+import 'package:path_provider/path_provider.dart' as path_provider;
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:get/get.dart';
-import 'package:hive_flutter/adapters.dart';
-import 'package:path_provider/path_provider.dart' as path_provider;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -42,12 +43,10 @@ Future<void> main() async {
     ],
   ); // creating notification channels.
 
-  //initializing HIVE (vi)
-
   final appDocumentDirectory =
       await path_provider.getApplicationDocumentsDirectory();
-  Hive.init(appDocumentDirectory.path); //initialized HIVE.
-  Hive.registerAdapter(TaskAdapter());
+  Hive.init(appDocumentDirectory.path);
+  Hive.registerAdapter<Events>(EventsAdapter());
   Hive.registerAdapter(TimeOfDayAdapter());
 
   BlocOverrides.runZoned(
@@ -57,18 +56,12 @@ Future<void> main() async {
 }
 
 class MyApp extends StatelessWidget {
-  MyApp({Key? key}) : super(key: key) {
-    //_controller.getThemeStatus();
-  }
-
-//  final _controller = Get.put(GetThemeMode());
+  MyApp({Key? key}) : super(key: key) {}
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(create: (context) => EventsCubit(EventsRepository()))
-      ],
+    return BlocProvider(
+      create: (context) => EventsBloc(eventsRepository: EventsRepository()),
       child: GetMaterialApp(
         title: 'Flutter Demo',
         debugShowCheckedModeBanner: false,
