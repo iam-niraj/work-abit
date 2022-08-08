@@ -1,15 +1,29 @@
 part of 'events_bloc.dart';
 
-abstract class EventsState {}
+enum EventsOverviewStatus { initial, loading, success, failure }
 
-class EventsLoading extends EventsState {}
+class EventsOverviewState extends Equatable {
+  const EventsOverviewState({
+    this.status = EventsOverviewStatus.initial,
+    this.events = const [],
+  });
 
-class EventsLoaded extends EventsState {
-  final List<Events> events;
-  EventsLoaded({required this.events});
-}
+  final EventsOverviewStatus status;
+  final List<EventModel> events;
 
-class EventsError extends EventsState {
-  final String message;
-  EventsError({required this.message});
+  EventsOverviewState copyWith({
+    EventsOverviewStatus Function()? status,
+    List<EventModel> Function()? todos,
+  }) {
+    return EventsOverviewState(
+      status: status != null ? status() : this.status,
+      events: todos != null ? todos() : this.events,
+    );
+  }
+
+  @override
+  List<Object?> get props => [
+    status,
+    events,
+  ];
 }

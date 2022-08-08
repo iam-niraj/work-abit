@@ -48,6 +48,8 @@ dependencies:
   fluttertoast: ^8.0.9
   flutter_bloc: ^8.0.1
   equatable: ^2.0.3
+  rxdart:
+  uuid: 3.0.6
 
 dev_dependencies:
   flutter_test:

@@ -1,16 +1,19 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_calendar/data/models/event_model/event_model.dart';
+import 'package:flutter_calendar/data/repositories/task_repositories.dart';
+import 'package:flutter_calendar/domain/usecases/events_usecases.dart';
 import 'package:flutter_calendar/presentation/screens/show_events/bloc/events_bloc.dart';
+import 'package:flutter_calendar/presentation/utils/aap_theme/theme.dart';
+import 'package:flutter_calendar/presentation/utils/notifications.dart';
+import 'package:flutter_calendar/presentation/widgets/task_tile.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-import '../../../../data/models/events.dart';
-import '../../../utils/aap_theme/theme.dart';
-import '../../../utils/notifications.dart';
-import '../../../widgets/task_tile.dart';
 
-/* class EventsOverviewPage extends StatelessWidget {
+ class EventsOverviewPage extends StatelessWidget {
   EventsOverviewPage({Key? key, required this.dateBarDate}) : super(key: key);
 
   final DateTime dateBarDate;
@@ -18,15 +21,14 @@ import '../../../widgets/task_tile.dart';
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => EventsBloc(
-        eventsRepository: EventsRepository(),
+      create: (context) => EventsBloc(eventsUsecases: EventsUseCases(EventsRepository()),
       )..add(LoadEvents()),
       child: EventsOverviewView(
         dateBarDate: dateBarDate,
       ),
     );
   }
-} */
+}
 
 class EventsOverviewView extends StatelessWidget {
   const EventsOverviewView({Key? key, required this.dateBarDate})
@@ -37,18 +39,20 @@ class EventsOverviewView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: BlocBuilder<EventsBloc, EventsState>(builder: (context, state) {
-        if (state is EventsLoading) {
+      child: BlocBuilder<EventsBloc, EventsOverviewState>(builder: (context, state) {
+        if (state.status == EventsOverviewStatus.loading) {
           context.read<EventsBloc>().add(LoadEvents());
-          return CircularProgressIndicator();
-        } else if (state is EventsLoaded) {
+          return CupertinoActivityIndicator();
+        } else if (state.status == EventsOverviewStatus.success) {
           if (state.events.isEmpty) {
             return Text("No Events");
           }
           return ListView.builder(
               itemCount: state.events.length,
               itemBuilder: (_, int index) {
-                Events event = state.events[index];
+                state.events.sort((a, b) => toDouble(a.startTime!).compareTo(toDouble(b.startTime!)));
+                state.events.sort((a, b) => a.isCompleted!.compareTo(b.isCompleted!));
+                EventModel event = state.events[index];
 
                 if (event.repeat == 'Daily') {
                   return AnimationConfiguration.staggeredList(
@@ -131,7 +135,7 @@ class EventsOverviewView extends StatelessWidget {
     );
   }
 
-  _showBottomSheet(BuildContext context, Events event, index) {
+  _showBottomSheet(BuildContext context, EventModel event, index) {
     Get.bottomSheet(Container(
       padding: const EdgeInsets.only(top: 4),
       height: event.isCompleted == 1
@@ -153,9 +157,7 @@ class EventsOverviewView extends StatelessWidget {
               : _bottomSheetButton(
                   label: "Task Completed",
                   onTap: () {
-                    // _taskController.markTaskComplete(index);
-                    final eventsBloc = BlocProvider.of<EventsBloc>(context);
-                    eventsBloc.add(UpdateEvent(index));
+                    context.read<EventsBloc>().add(UpdateEvent(event, index));
                     Navigator.pop(context);
                   },
                   clr: primaryClr,
@@ -163,9 +165,7 @@ class EventsOverviewView extends StatelessWidget {
           _bottomSheetButton(
               label: "Delete Task",
               onTap: () {
-                // _taskController.deleteTask(index);
-                final eventsBloc = BlocProvider.of<EventsBloc>(context);
-                eventsBloc.add(DeleteEvent(index));
+                context.read<EventsBloc>().add(DeleteEvent(event ,index));
                 Navigator.pop(context);
               },
               clr: Colors.red,

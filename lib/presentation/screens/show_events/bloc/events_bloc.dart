@@ -1,67 +1,46 @@
 import 'package:bloc/bloc.dart';
-import 'package:flutter_calendar/data/repositories/task_repositories.dart';
-
-import '../../../../data/models/events.dart';
+import 'package:equatable/equatable.dart';
+import 'package:flutter_calendar/data/data_source/event_table/event_table.dart';
+import 'package:flutter_calendar/data/models/event_model/event_model.dart';
+import 'package:flutter_calendar/domain/entities/event_entity.dart';
+import 'package:flutter_calendar/domain/usecases/events_usecases.dart';
 
 part 'events_event.dart';
 part 'events_state.dart';
 
-class EventsBloc extends Bloc<EventsEvent, EventsState> {
+class EventsBloc extends Bloc<EventsEvent, EventsOverviewState> {
   EventsBloc({
-    required EventsRepository eventsRepository,
-  })  : _eventsRepository = eventsRepository,
-        super(EventsLoading()) {
-    on<AddEvent>(_addEvent);
+    required EventsUseCases eventsUsecases,
+  })  : _eventsUsecases = eventsUsecases,
+        super(EventsOverviewState()) {
     on<UpdateEvent>(_updateEvent);
     on<DeleteEvent>(_deleteEvent);
     on<LoadEvents>(loadEvents);
   }
 
-  final EventsRepository _eventsRepository;
+  final EventsUseCases _eventsUsecases;
 
-  Future<void> loadEvents(LoadEvents event, Emitter<EventsState> emit) async {
-    try {
-      List<Events> data = await _eventsRepository.getAllTodos();
-      emit(EventsLoaded(events: data));
-    } on Exception {
-      emit(EventsError(
-          message: "Could not fetch the list, please try again later!"));
-    }
+  Future<void> loadEvents(LoadEvents event, Emitter<EventsOverviewState> emit) async {
+    emit(state.copyWith(status: () => EventsOverviewStatus.loading));
+
+    await emit.forEach<List<EventModel>>(
+      _eventsUsecases.getAll(),
+      onData: (events) => state.copyWith(
+        status: () => EventsOverviewStatus.success,
+        todos: () => events,
+      ),
+      onError: (_, __) => state.copyWith(
+        status: () => EventsOverviewStatus.failure,
+      ),
+    );
   }
 
-  Future<void> _addEvent(AddEvent event, Emitter<EventsState> emit) async {
-    try {
-      final state = this.state;
-      await _eventsRepository.insertTodo(event.task);
-      if (state is EventsLoaded) {
-        add(LoadEvents());
-      }
-    } on Exception {
-      emit(EventsError(message: "Could`nt add todo"));
-    }
+  Future _deleteEvent(DeleteEvent event, Emitter<EventsOverviewState> emit) async {
+    await _eventsUsecases.delete(event.event, event.index);
   }
 
-  Future _deleteEvent(DeleteEvent event, Emitter<EventsState> emit) async {
-    try {
-      final state = this.state;
-      await _eventsRepository.deleteTodo(event.id);
-      if (state is EventsLoaded) {
-        add(LoadEvents());
-      }
-    } on Exception {
-      emit(EventsError(message: "Could'nt add todo"));
-    }
-  }
-
-  Future _updateEvent(UpdateEvent event, Emitter<EventsState> emit) async {
-    try {
-      final state = this.state;
-      if (state is EventsLoaded) {
-        await _eventsRepository.updateTodo(event.id);
-        add(LoadEvents());
-      }
-    } on Exception {
-      emit(EventsError(message: "Could'nt add todo"));
-    }
+  Future _updateEvent(UpdateEvent event, Emitter<EventsOverviewState> emit) async {
+    final completedEvent = event.event.copyWith(isCompleted: 1);
+    await _eventsUsecases.update(completedEvent, event.index);
   }
 }

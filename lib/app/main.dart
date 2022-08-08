@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_calendar/data/models/events.dart';
-import 'package:flutter_calendar/data/repositories/task_repositories.dart';
+import 'package:flutter_calendar/data/data_source/event_table/event_table.dart';
+import 'package:flutter_calendar/data/data_source/event_table/time_of_day.dart';
 import 'package:flutter_calendar/presentation/screens/add_event/view/add_event_page.dart';
-import 'package:flutter_calendar/presentation/screens/show_events/bloc/events_bloc.dart';
+import 'package:flutter_calendar/presentation/screens/home/view/home_page.dart';
+import 'package:flutter_calendar/presentation/utils/aap_theme/get_theme_mode.dart';
+import 'package:flutter_calendar/presentation/utils/aap_theme/theme.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import '../data/models/time_of_day.dart';
-import '../presentation/utils/aap_theme/get_theme_mode.dart';
-import '../presentation/utils/aap_theme/theme.dart';
 import 'bloc_observer.dart';
-import '../presentation/screens/home/view/home_page.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:get/get.dart';
@@ -46,7 +44,7 @@ Future<void> main() async {
   final appDocumentDirectory =
       await path_provider.getApplicationDocumentsDirectory();
   Hive.init(appDocumentDirectory.path);
-  Hive.registerAdapter<Events>(EventsAdapter());
+  Hive.registerAdapter<EventTable>(EventTableAdapter());
   Hive.registerAdapter(TimeOfDayAdapter());
 
   BlocOverrides.runZoned(
@@ -60,9 +58,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => EventsBloc(eventsRepository: EventsRepository()),
-      child: GetMaterialApp(
+    return GetMaterialApp(
         title: 'Flutter Demo',
         debugShowCheckedModeBanner: false,
         theme: Themes.lightTheme,
@@ -73,7 +69,6 @@ class MyApp extends StatelessWidget {
           "/home": (context) => HomePage(),
         },
         home: HomePage(),
-      ),
-    );
+      );
   }
 }

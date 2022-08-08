@@ -1,23 +1,28 @@
 part of 'events_bloc.dart';
 
-abstract class EventsEvent {}
+abstract class EventsEvent extends Equatable {
+  const EventsEvent();
 
-class AddEvent extends EventsEvent {
-  Events task;
-
-  AddEvent({required this.task});
+  @override
+  List<Object> get props => [];
 }
 
 class LoadEvents extends EventsEvent {}
 
 class UpdateEvent extends EventsEvent {
-  final int id;
+  final int index;
+final EventEntity event;
+  UpdateEvent(this.event, this.index);
 
-  UpdateEvent(this.id);
+  @override
+  List<Object> get props => [index, event];
 }
 
 class DeleteEvent extends EventsEvent {
-  final int id;
+  final int index;
+final EventEntity event;
+  DeleteEvent(this.event, this.index);
 
-  DeleteEvent(this.id);
+  @override
+  List<Object> get props => [index, event];
 }

@@ -1,14 +1,33 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_calendar/data/models/events.dart';
-import 'package:flutter_calendar/presentation/screens/show_events/bloc/events_bloc.dart';
-import '../../../utils/aap_theme/theme.dart';
-import '../../../widgets/input_field.dart';
-import '../../../widgets/app_bar_widget.dart';
+import 'package:flutter_calendar/data/data_source/event_table/event_table.dart';
+import 'package:flutter_calendar/data/repositories/task_repositories.dart';
+import 'package:flutter_calendar/domain/entities/event_entity.dart';
+import 'package:flutter_calendar/presentation/screens/add_event/bloc/add_event_bloc.dart';
+import 'package:flutter_calendar/domain/usecases/events_usecases.dart';
+import 'package:flutter_calendar/presentation/utils/aap_theme/theme.dart';
+import 'package:flutter_calendar/presentation/widgets/app_bar_widget.dart';
+import 'package:flutter_calendar/presentation/widgets/button_widget.dart';
+import 'package:flutter_calendar/presentation/widgets/input_field.dart';
+import 'package:uuid/uuid.dart';
+
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import '../../../widgets/button_widget.dart';
+
+class AddTaskPage extends StatelessWidget {
+  const AddTaskPage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(create: (context) => AddEventBloc(eventsUsecases: EventsUseCases(EventsRepository(),
+    ),
+    ),
+      child: AddTaskScreen(),
+    );
+  }
+}
+
 
 class AddTaskScreen extends StatefulWidget {
   const AddTaskScreen({Key? key}) : super(key: key);
@@ -308,7 +327,8 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
 
   _addTaskToDb() async {
     print(_timeOfDay);
-    var value = Events(
+    var value = EventEntity(
+      id: Uuid().v4(),
       title: _titleController.text,
       note: _noteController.text,
       isCompleted: 0,
@@ -319,7 +339,6 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
       remind: _selectedRemind,
       repeat: _selectedRepeat,
     );
-    final eventsCubit = BlocProvider.of<EventsBloc>(context);
-    eventsCubit.add(AddEvent(task: value));
+    context.read<AddEventBloc>().add(AddEventEvent(event: value));
   }
 }

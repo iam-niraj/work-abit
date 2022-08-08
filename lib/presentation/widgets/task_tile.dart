@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_calendar/data/models/event_model/event_model.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../data/models/events.dart';
 import '../utils/aap_theme/theme.dart';
 
 class TaskTile extends StatelessWidget {
-  final Events? task;
+  final EventModel? task;
   const TaskTile(this.task);
 
   @override

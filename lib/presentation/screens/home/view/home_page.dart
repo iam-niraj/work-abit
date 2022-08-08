@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_calendar/presentation/screens/show_events/view/events_overview.dart';
 import 'package:day_night_switcher/day_night_switcher.dart';
+import 'package:flutter_calendar/presentation/screens/add_event/view/add_event_page.dart';
+import 'package:flutter_calendar/presentation/screens/show_events/view/events_overview.dart';
+import 'package:flutter_calendar/presentation/widgets/button_widget.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
@@ -8,9 +10,7 @@ import 'package:date_picker_timeline/date_picker_timeline.dart';
 import '../../../utils/aap_theme/get_theme_mode.dart';
 import '../../../utils/aap_theme/theme.dart';
 import '../../../widgets/app_bar_widget.dart';
-import '../../../widgets/button_widget.dart';
 import '../../../widgets/toast.dart';
-import '../../add_event/view/add_event_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -64,7 +64,7 @@ class _HomePageState extends State<HomePage> {
           const SizedBox(
             height: 10,
           ),
-          EventsOverviewView(
+          EventsOverviewPage(
             dateBarDate: _selectedDate,
           ),
         ],
@@ -132,7 +132,7 @@ class _HomePageState extends State<HomePage> {
                 await Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => AddTaskScreen(),
+                    builder: (context) => AddTaskPage(),
                   ),
                 );
                 // _taskController.getTask();
