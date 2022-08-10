@@ -3,15 +3,15 @@ import 'package:flutter/material.dart';
 
 class EventEntity extends Equatable {
   String? id;
-      String? title;
+  String? title;
   String? note;
-      int? isCompleted;
+  int? isCompleted;
   DateTime? date;
-      TimeOfDay? startTime;
+  TimeOfDay? startTime;
   String? endTime;
-      int? color;
+  int? color;
   int? remind;
-      String? repeat;
+  String? repeat;
 
   EventEntity({
     this.id,
@@ -48,10 +48,20 @@ class EventEntity extends Equatable {
         endTime: endTime ?? this.endTime,
         color: color ?? this.color,
         remind: remind ?? this.remind,
-        repeat: repeat ?? this.repeat
-    );
+        repeat: repeat ?? this.repeat);
   }
 
   @override
-  List<Object?> get props => [id, title, note, isCompleted, date, startTime, endTime, color, remind, repeat];
+  List<Object?> get props => [
+        id,
+        title,
+        note,
+        isCompleted,
+        date,
+        startTime,
+        endTime,
+        color,
+        remind,
+        repeat
+      ];
 }

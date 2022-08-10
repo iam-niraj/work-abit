@@ -23,7 +23,7 @@ class EventsOverviewState extends Equatable {
 
   @override
   List<Object?> get props => [
-    status,
-    events,
-  ];
+        status,
+        events,
+      ];
 }

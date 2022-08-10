@@ -1,7 +1,7 @@
-import 'package:flutter_calendar/data/models/event_model/event_model.dart';
+import 'package:flutter_calendar/data/data_source/data_source.dart';
+import 'package:flutter_calendar/data/models/models.dart';
 import 'package:hive/hive.dart';
 import 'package:rxdart/subjects.dart';
-import 'event_table/event_table.dart';
 
 class EventController {
   final String _boxName = "user_Tasks";

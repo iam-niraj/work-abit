@@ -1,16 +1,36 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:day_night_switcher/day_night_switcher.dart';
-import 'package:flutter_calendar/presentation/screens/add_event/view/add_event_page.dart';
-import 'package:flutter_calendar/presentation/screens/show_events/view/events_overview.dart';
-import 'package:flutter_calendar/presentation/widgets/button_widget.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_calendar/data/models/models.dart';
+import 'package:flutter_calendar/data/repositories/repositories.dart';
+import 'package:flutter_calendar/domain/usecases/usecases.dart';
+import 'package:flutter_calendar/presentation/screens/add_event/view/view.dart';
+import 'package:flutter_calendar/presentation/screens/home/cubit/home_cubit.dart';
+import 'package:flutter_calendar/presentation/screens/show_events/view/view.dart';
+import 'package:flutter_calendar/presentation/utils/utils.dart';
+import 'package:flutter_calendar/presentation/widgets/widgets.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:date_picker_timeline/date_picker_timeline.dart';
-import '../../../utils/aap_theme/get_theme_mode.dart';
-import '../../../utils/aap_theme/theme.dart';
-import '../../../widgets/app_bar_widget.dart';
-import '../../../widgets/toast.dart';
+
+class HomePageView extends StatelessWidget {
+  const HomePageView({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => HomeCubit(
+        indianHolidaysUseCases: IndianHolidaysUseCases(
+          IndianHolidaysRepositoryImpl(),
+        ),
+      )..setHolidays(),
+      child: HomePage(),
+    );
+  }
+}
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -22,54 +42,50 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   late DateTime _selectedDate = DateTime.now();
   final DatePickerController _controller = DatePickerController();
-
   final GetThemeMode _themeController = Get.put(GetThemeMode());
 
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      _controller.jumpToSelection();
-    });
+    Timer.run(() => _controller.jumpToSelection());
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    final list = context.select((HomeCubit cubit) => cubit.state.items);
+    final item = list.firstWhereOrNull((element) =>
+        element.start.date == DateFormat('yyyy-MM-dd').format(_selectedDate));
     return Scaffold(
-      appBar: MyAppBar(
-        widget: ObxValue(
-          (data) => DayNightSwitcherIcon(
-            isDarkModeEnabled: _themeController.isLightTheme.value,
-            onStateChanged: (state) {
-              Get.isDarkMode
-                  ? commonToast("Switched to Light Theme")
-                  : commonToast("Switched to Dark Theme");
-              _themeController.isLightTheme.value = state;
-              Get.changeThemeMode(
-                _themeController.isLightTheme.value
-                    ? ThemeMode.light
-                    : ThemeMode.dark,
-              );
-              _themeController.saveThemeStatus();
-              //  _taskController.getThemeStatus(state);
-            },
+        appBar: MyAppBar(
+          widget: ObxValue(
+            (data) => DayNightSwitcherIcon(
+              isDarkModeEnabled: _themeController.isLightTheme.value,
+              onStateChanged: (state) {
+                Get.isDarkMode
+                    ? commonToast("Switched to Light Theme")
+                    : commonToast("Switched to Dark Theme");
+                _themeController.isLightTheme.value = state;
+                Get.changeThemeMode(
+                  _themeController.isLightTheme.value
+                      ? ThemeMode.light
+                      : ThemeMode.dark,
+                );
+                _themeController.saveThemeStatus();
+                //  _taskController.getThemeStatus(state);
+              },
+            ),
+            false.obs,
           ),
-          false.obs,
         ),
-      ),
-      body: Column(
-        children: [
-          _addTaskBar(),
-          _addDateBar(),
-          const SizedBox(
-            height: 10,
-          ),
-          EventsOverviewPage(
-            dateBarDate: _selectedDate,
-          ),
-        ],
-      ),
-    );
+        body: Column(
+          children: [
+            _addTaskBar(item),
+            _addDateBar(),
+            EventsOverviewPage(
+              dateBarDate: _selectedDate,
+            ),
+          ],
+        ));
   }
 
   _addDateBar() {
@@ -105,7 +121,8 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  _addTaskBar() {
+  _addTaskBar(Items? item) {
+    String? data = item?.summary ?? "";
     return Container(
       margin: const EdgeInsets.only(left: 20, right: 20, top: 10),
       child: Row(
@@ -116,27 +133,30 @@ class _HomePageState extends State<HomePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  DateFormat.yMMMMd().format(DateTime.now()),
+                  DateFormat.yMMMMd().format(_selectedDate),
                   style: subHeadingStyle,
                 ),
-                Text(
-                  'Today',
-                  style: headingStyle,
-                )
+                DateFormat('yyyy-MM-dd').format(_selectedDate) ==
+                        DateFormat('yyyy-MM-dd').format(DateTime.now())
+                    ? Text(
+                        'Today, ' + data,
+                        style: headingStyle,
+                      )
+                    : Text(data)
               ],
             ),
           ),
           MyButton(
-              label: "+ Add Task",
-              onTap: () async {
-                await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => AddTaskPage(),
-                  ),
-                );
-                // _taskController.getTask();
-              })
+            label: "+ Add Task",
+            onTap: () async {
+              await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AddTaskPage(),
+                ),
+              );
+            },
+          ),
         ],
       ),
     );

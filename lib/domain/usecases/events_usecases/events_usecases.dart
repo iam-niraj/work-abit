@@ -1,12 +1,11 @@
-import 'package:flutter_calendar/data/models/event_model/event_model.dart';
-import 'package:flutter_calendar/domain/entities/event_entity.dart';
-import 'package:flutter_calendar/domain/repositories/event_repository.dart';
+import 'package:flutter_calendar/data/models/models.dart';
+import 'package:flutter_calendar/domain/entities/entities.dart';
+import 'package:flutter_calendar/domain/repositories/repositories.dart';
 
 class EventsUseCases {
-
   EventsUseCases(this.eventRepository);
 
-  final EventRepository eventRepository;
+  final EventsRepository eventRepository;
 
   Stream<List<EventModel>> getAll() => eventRepository.getAll();
 

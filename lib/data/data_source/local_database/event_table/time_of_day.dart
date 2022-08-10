@@ -20,10 +20,6 @@ class TimeOfDayAdapter extends TypeAdapter<TimeOfDay> {
     var fields = <int, dynamic>{
       for (var i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return TimeOfDay(
-      hour: fields[0] as int,
-      minute: fields[1] as int
-    );
+    return TimeOfDay(hour: fields[0] as int, minute: fields[1] as int);
   }
-
 }

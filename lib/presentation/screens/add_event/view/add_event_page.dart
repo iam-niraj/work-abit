@@ -1,33 +1,33 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_calendar/data/data_source/event_table/event_table.dart';
-import 'package:flutter_calendar/data/repositories/task_repositories.dart';
-import 'package:flutter_calendar/domain/entities/event_entity.dart';
+import 'package:flutter_calendar/data/repositories/repositories.dart';
+import 'package:flutter_calendar/domain/entities/entities.dart';
+import 'package:flutter_calendar/domain/usecases/usecases.dart';
 import 'package:flutter_calendar/presentation/screens/add_event/bloc/add_event_bloc.dart';
-import 'package:flutter_calendar/domain/usecases/events_usecases.dart';
-import 'package:flutter_calendar/presentation/utils/aap_theme/theme.dart';
-import 'package:flutter_calendar/presentation/widgets/app_bar_widget.dart';
-import 'package:flutter_calendar/presentation/widgets/button_widget.dart';
-import 'package:flutter_calendar/presentation/widgets/input_field.dart';
+import 'package:flutter_calendar/presentation/utils/utils.dart';
 import 'package:uuid/uuid.dart';
 
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+
+import '../../../widgets/widgets.dart';
 
 class AddTaskPage extends StatelessWidget {
   const AddTaskPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(create: (context) => AddEventBloc(eventsUsecases: EventsUseCases(EventsRepository(),
-    ),
-    ),
+    return BlocProvider(
+      create: (context) => AddEventBloc(
+        eventsUsecases: EventsUseCases(
+          EventsRepositoryImpl(),
+        ),
+      ),
       child: AddTaskScreen(),
     );
   }
 }
-
 
 class AddTaskScreen extends StatefulWidget {
   const AddTaskScreen({Key? key}) : super(key: key);

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_calendar/domain/entities/event_entity.dart';
+import 'package:flutter_calendar/domain/entities/entities.dart';
 
 class EventModel extends EventEntity {
   String? id;
@@ -28,19 +28,30 @@ class EventModel extends EventEntity {
 
   factory EventModel.casteFromEntity(EventEntity eventEntity) {
     return EventModel(
-        id: eventEntity.id,
-        title: eventEntity.title,
-        note: eventEntity.note,
-        isCompleted: eventEntity.isCompleted,
-        date: eventEntity.date,
-        startTime: eventEntity.startTime,
-        endTime: eventEntity.endTime,
-        color: eventEntity.color,
-        remind: eventEntity.remind,
-        repeat: eventEntity.repeat,
+      id: eventEntity.id,
+      title: eventEntity.title,
+      note: eventEntity.note,
+      isCompleted: eventEntity.isCompleted,
+      date: eventEntity.date,
+      startTime: eventEntity.startTime,
+      endTime: eventEntity.endTime,
+      color: eventEntity.color,
+      remind: eventEntity.remind,
+      repeat: eventEntity.repeat,
     );
   }
 
   @override
-  List<Object?> get props => [id, title, note, isCompleted, date, startTime, endTime, color, remind, repeat];
+  List<Object?> get props => [
+        id,
+        title,
+        note,
+        isCompleted,
+        date,
+        startTime,
+        endTime,
+        color,
+        remind,
+        repeat
+      ];
 }

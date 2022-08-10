@@ -1,19 +1,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_calendar/data/models/event_model/event_model.dart';
-import 'package:flutter_calendar/data/repositories/task_repositories.dart';
-import 'package:flutter_calendar/domain/usecases/events_usecases.dart';
+import 'package:flutter_calendar/data/models/models.dart';
+import 'package:flutter_calendar/data/repositories/repositories.dart';
+import 'package:flutter_calendar/domain/usecases/usecases.dart';
 import 'package:flutter_calendar/presentation/screens/show_events/bloc/events_bloc.dart';
-import 'package:flutter_calendar/presentation/utils/aap_theme/theme.dart';
-import 'package:flutter_calendar/presentation/utils/notifications.dart';
-import 'package:flutter_calendar/presentation/widgets/task_tile.dart';
+import 'package:flutter_calendar/presentation/utils/utils.dart';
+import 'package:flutter_calendar/presentation/widgets/widgets.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-
- class EventsOverviewPage extends StatelessWidget {
+class EventsOverviewPage extends StatelessWidget {
   EventsOverviewPage({Key? key, required this.dateBarDate}) : super(key: key);
 
   final DateTime dateBarDate;
@@ -21,7 +19,8 @@ import 'package:intl/intl.dart';
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => EventsBloc(eventsUsecases: EventsUseCases(EventsRepository()),
+      create: (context) => EventsBloc(
+        eventsUsecases: EventsUseCases(EventsRepositoryImpl()),
       )..add(LoadEvents()),
       child: EventsOverviewView(
         dateBarDate: dateBarDate,
@@ -31,29 +30,47 @@ import 'package:intl/intl.dart';
 }
 
 class EventsOverviewView extends StatelessWidget {
-  const EventsOverviewView({Key? key, required this.dateBarDate})
-      : super(key: key);
+  EventsOverviewView({Key? key, required this.dateBarDate}) : super(key: key);
 
   final DateTime dateBarDate;
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: BlocBuilder<EventsBloc, EventsOverviewState>(builder: (context, state) {
-        if (state.status == EventsOverviewStatus.loading) {
-          context.read<EventsBloc>().add(LoadEvents());
-          return CupertinoActivityIndicator();
-        } else if (state.status == EventsOverviewStatus.success) {
-          if (state.events.isEmpty) {
-            return Text("No Events");
+    return BlocBuilder<EventsBloc, EventsOverviewState>(
+      builder: (context, state) {
+        if (state.events.isEmpty) {
+          if (state.status != EventsOverviewStatus.loading) {
+            return const Center(child: CupertinoActivityIndicator());
+          } else if (state.status != EventsOverviewStatus.success) {
+            return const SizedBox();
+          } else {
+            return Center(
+              child: Text(
+                "dcbsvbhs",
+              ),
+            );
           }
-          return ListView.builder(
-              itemCount: state.events.length,
-              itemBuilder: (_, int index) {
-                state.events.sort((a, b) => toDouble(a.startTime!).compareTo(toDouble(b.startTime!)));
-                state.events.sort((a, b) => a.isCompleted!.compareTo(b.isCompleted!));
-                EventModel event = state.events[index];
+        }
 
+        List<EventModel> events = state.events
+            .where(((element) =>
+                DateFormat.yMd().format(element.date!) ==
+                DateFormat.yMd().format(dateBarDate)))
+            .toList();
+
+        if (events.isEmpty) {
+          return Center(
+              child:
+                  SizedBox(height: 50, width: 50, child: Text("NASCHBSCWNC")));
+        } else {
+          return Expanded(
+            child: ListView.builder(
+              itemCount: events.length,
+              itemBuilder: (_, int index) {
+                events.sort((a, b) =>
+                    toDouble(a.startTime!).compareTo(toDouble(b.startTime!)));
+                events.sort((a, b) => a.isCompleted!.compareTo(b.isCompleted!));
+                EventModel event = events[index];
                 if (event.repeat == 'Daily') {
                   return AnimationConfiguration.staggeredList(
                       position: index,
@@ -103,11 +120,12 @@ class EventsOverviewView extends StatelessWidget {
                   if (toDouble(event.startTime as TimeOfDay) >
                       toDouble(TimeOfDay.now())) {
                     showTaskReminderNotification(
-                        event.startTime!.hour,
-                        event.startTime!.minute,
-                        event.date!.day,
-                        event.date!.month,
-                        event.date!.year);
+                      event.startTime!.hour,
+                      event.startTime!.minute,
+                      event.date!.day,
+                      event.date!.month,
+                      event.date!.year,
+                    );
                   }
                   return AnimationConfiguration.staggeredList(
                       position: index,
@@ -125,13 +143,13 @@ class EventsOverviewView extends StatelessWidget {
                         ),
                       ));
                 } else {
-                  return Container();
+                  return Text("dscvjisv");
                 }
-              });
-        } else {
-          return CircularProgressIndicator();
+              },
+            ),
+          );
         }
-      }),
+      },
     );
   }
 
@@ -165,7 +183,7 @@ class EventsOverviewView extends StatelessWidget {
           _bottomSheetButton(
               label: "Delete Task",
               onTap: () {
-                context.read<EventsBloc>().add(DeleteEvent(event ,index));
+                context.read<EventsBloc>().add(DeleteEvent(event, index));
                 Navigator.pop(context);
               },
               clr: Colors.red,

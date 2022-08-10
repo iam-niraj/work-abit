@@ -1,7 +1,6 @@
-import 'package:flutter_calendar/data/data_source/event_table/event_table.dart';
 import 'package:flutter_calendar/data/models/event_model/event_model.dart';
 
-abstract class EventRepository {
+abstract class EventsRepository {
   Stream<List<EventModel>> getAll();
 
   Future create(EventModel event);

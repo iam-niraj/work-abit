@@ -3,7 +3,6 @@ part of 'add_event_bloc.dart';
 enum AddEventStatus { initial, loading, success, failure }
 
 class AddEventState extends Equatable {
-
   const AddEventState({
     this.status = AddEventStatus.initial,
   });
@@ -17,6 +16,7 @@ class AddEventState extends Equatable {
       status: status ?? this.status,
     );
   }
+
   @override
   List<Object> get props => [status];
 }

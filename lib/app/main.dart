@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_calendar/data/data_source/event_table/event_table.dart';
-import 'package:flutter_calendar/data/data_source/event_table/time_of_day.dart';
-import 'package:flutter_calendar/presentation/screens/add_event/view/add_event_page.dart';
-import 'package:flutter_calendar/presentation/screens/home/view/home_page.dart';
-import 'package:flutter_calendar/presentation/utils/aap_theme/get_theme_mode.dart';
-import 'package:flutter_calendar/presentation/utils/aap_theme/theme.dart';
+import 'package:flutter_calendar/data/data_source/data_source.dart';
+import 'package:flutter_calendar/presentation/screens/add_event/view/view.dart';
+import 'package:flutter_calendar/presentation/screens/home/view/view.dart';
+import 'package:flutter_calendar/presentation/utils/utils.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'bloc_observer.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
@@ -59,16 +57,16 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-        title: 'Flutter Demo',
-        debugShowCheckedModeBanner: false,
-        theme: Themes.lightTheme,
-        darkTheme: Themes.darkTheme,
-        themeMode: ThemeMode.system,
-        routes: {
-          "/addEvent": (context) => AddTaskScreen(),
-          "/home": (context) => HomePage(),
-        },
-        home: HomePage(),
-      );
+      title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
+      theme: Themes.lightTheme,
+      darkTheme: Themes.darkTheme,
+      themeMode: ThemeMode.system,
+      routes: {
+        "/addEvent": (context) => AddTaskScreen(),
+        "/home": (context) => HomePageView(),
+      },
+      home: HomePageView(),
+    );
   }
 }

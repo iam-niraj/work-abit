@@ -11,7 +11,7 @@ class LoadEvents extends EventsEvent {}
 
 class UpdateEvent extends EventsEvent {
   final int index;
-final EventEntity event;
+  final EventEntity event;
   UpdateEvent(this.event, this.index);
 
   @override
@@ -20,7 +20,7 @@ final EventEntity event;
 
 class DeleteEvent extends EventsEvent {
   final int index;
-final EventEntity event;
+  final EventEntity event;
   DeleteEvent(this.event, this.index);
 
   @override
