@@ -80,7 +80,7 @@ class _HomePageState extends State<HomePage> {
         body: Column(
           children: [
             _addTaskBar(item),
-            _addDateBar(),
+            _addDateBar(list),
             EventsOverviewPage(
               dateBarDate: _selectedDate,
             ),
@@ -88,7 +88,7 @@ class _HomePageState extends State<HomePage> {
         ));
   }
 
-  _addDateBar() {
+  _addDateBar(List<Items> list) {
     return Container(
       margin: const EdgeInsets.only(top: 20, left: 20),
       child: DatePicker(
@@ -98,6 +98,8 @@ class _HomePageState extends State<HomePage> {
         initialSelectedDate: DateTime.now(),
         selectionColor: primaryClr,
         selectedTextColor: Colors.white,
+        choiceDates: list.map((e) => DateTime.parse(e.start.date)).toList(),
+        deactivatedColor: Colors.redAccent.shade100,
         dateTextStyle: GoogleFonts.lato(
           textStyle: const TextStyle(
               fontSize: 20, fontWeight: FontWeight.w600, color: Colors.grey),
@@ -148,14 +150,7 @@ class _HomePageState extends State<HomePage> {
           ),
           MyButton(
             label: "+ Add Task",
-            onTap: () async {
-              await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => AddTaskPage(),
-                ),
-              );
-            },
+            onTap: () => Navigator.of(context).push(AddTaskPage.route()),
           ),
         ],
       ),

@@ -6,28 +6,25 @@ import 'package:rxdart/subjects.dart';
 class EventController {
   final String _boxName = "user_Tasks";
 
-  final _todoStreamController = BehaviorSubject<List<EventModel>>.seeded(const []);
+  final _todoStreamController =
+      BehaviorSubject<List<EventModel>>.seeded(const []);
 
-
-  EventController(){
+  EventController() {
     getEvents();
   }
 
   Future addEvent(EventModel event) async {
     final events = [..._todoStreamController.value];
-    final todoIndex = events.indexWhere((t) => t.id == event.id);
-    if (todoIndex >= 0) {
-      events[todoIndex] = event;
-    } else {
-      events.add(event);
-    }
+    //final todoIndex = events.indexWhere((t) => t.id == event.id);
+    events.add(event);
     _todoStreamController.add(events);
     final box = await Hive.openBox<EventTable>(_boxName);
     final eventTable = EventTable.casteFromModel(event);
     await box.add(eventTable);
   }
 
-  Stream<List<EventModel>> getAllEvents() => _todoStreamController.asBroadcastStream();
+  Stream<List<EventModel>> getAllEvents() =>
+      _todoStreamController.asBroadcastStream();
 
   Future getEvents() async {
     var box = await Hive.openBox<EventTable>(_boxName);

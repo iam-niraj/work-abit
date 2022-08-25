@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_calendar/data/data_source/data_source.dart';
+import 'package:flutter_calendar/data/repositories/events_repository_Impl/event_repository_Impl.dart';
+import 'package:flutter_calendar/domain/usecases/events_usecases/events_usecases.dart';
 import 'package:flutter_calendar/presentation/screens/add_event/view/view.dart';
 import 'package:flutter_calendar/presentation/screens/home/view/view.dart';
 import 'package:flutter_calendar/presentation/utils/utils.dart';
@@ -45,28 +47,37 @@ Future<void> main() async {
   Hive.registerAdapter<EventTable>(EventTableAdapter());
   Hive.registerAdapter(TimeOfDayAdapter());
 
+  final eventsUsecases = EventsUseCases(EventsRepositoryImpl());
+
   BlocOverrides.runZoned(
-    () => runApp(MyApp()),
+    () => runApp(MyApp(
+      eventsUseCases: eventsUsecases,
+    )),
     blocObserver: TodoBlocObserver(),
   );
 }
 
 class MyApp extends StatelessWidget {
-  MyApp({Key? key}) : super(key: key) {}
+  MyApp({Key? key, required this.eventsUseCases}) : super(key: key) {}
+
+  final EventsUseCases eventsUseCases;
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      title: 'Flutter Demo',
-      debugShowCheckedModeBanner: false,
-      theme: Themes.lightTheme,
-      darkTheme: Themes.darkTheme,
-      themeMode: ThemeMode.system,
-      routes: {
-        "/addEvent": (context) => AddTaskScreen(),
-        "/home": (context) => HomePageView(),
-      },
-      home: HomePageView(),
+    return RepositoryProvider.value(
+      value: eventsUseCases,
+      child: GetMaterialApp(
+        title: 'Flutter Demo',
+        debugShowCheckedModeBanner: false,
+        theme: Themes.lightTheme,
+        darkTheme: Themes.darkTheme,
+        themeMode: ThemeMode.system,
+        routes: {
+          "/addEvent": (context) => AddTaskScreen(),
+          "/home": (context) => HomePageView(),
+        },
+        home: HomePageView(),
+      ),
     );
   }
 }

@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_calendar/data/models/models.dart';
-import 'package:flutter_calendar/data/repositories/repositories.dart';
 import 'package:flutter_calendar/domain/usecases/usecases.dart';
 import 'package:flutter_calendar/presentation/screens/show_events/bloc/events_bloc.dart';
 import 'package:flutter_calendar/presentation/utils/utils.dart';
@@ -20,8 +19,8 @@ class EventsOverviewPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => EventsBloc(
-        eventsUsecases: EventsUseCases(EventsRepositoryImpl()),
-      )..add(LoadEvents()),
+        eventsUsecases: context.read<EventsUseCases>(),
+      )..add(const LoadEvents()),
       child: EventsOverviewView(
         dateBarDate: dateBarDate,
       ),
@@ -43,12 +42,6 @@ class EventsOverviewView extends StatelessWidget {
             return const Center(child: CupertinoActivityIndicator());
           } else if (state.status != EventsOverviewStatus.success) {
             return const SizedBox();
-          } else {
-            return Center(
-              child: Text(
-                "dcbsvbhs",
-              ),
-            );
           }
         }
 

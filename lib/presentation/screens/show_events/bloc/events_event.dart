@@ -7,7 +7,9 @@ abstract class EventsEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class LoadEvents extends EventsEvent {}
+class LoadEvents extends EventsEvent {
+  const LoadEvents();
+}
 
 class UpdateEvent extends EventsEvent {
   final int index;

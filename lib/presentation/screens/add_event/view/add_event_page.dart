@@ -16,14 +16,25 @@ import '../../../widgets/widgets.dart';
 class AddTaskPage extends StatelessWidget {
   const AddTaskPage({Key? key}) : super(key: key);
 
+  static Route<void> route() {
+    return MaterialPageRoute(
+      fullscreenDialog: true,
+      builder: (context) => BlocProvider(
+        create: (context) => AddEventBloc(
+          eventsUsecases: context.read<EventsUseCases>(),
+        ),
+        child: const AddTaskPage(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => AddEventBloc(
-        eventsUsecases: EventsUseCases(
-          EventsRepositoryImpl(),
-        ),
-      ),
+    return BlocListener<AddEventBloc, AddEventState>(
+      listenWhen: (previous, current) =>
+          previous.status != current.status &&
+          current.status == AddEventStatus.success,
+      listener: (context, state) => Navigator.of(context).pop(),
       child: AddTaskScreen(),
     );
   }
@@ -308,11 +319,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
 
   _validateDate() {
     if (_titleController.text.isNotEmpty && _noteController.text.isNotEmpty) {
-      _addTaskToDb(); // add to database
-      Navigator.pushNamed(
-        context,
-        '/home',
-      );
+      _addTaskToDb();
     } else if (_titleController.text.isEmpty || _noteController.text.isEmpty) {
       Get.snackbar("Required", "All fields are required!",
           snackPosition: SnackPosition.BOTTOM,
