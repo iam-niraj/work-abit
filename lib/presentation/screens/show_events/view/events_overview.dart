@@ -9,6 +9,7 @@ import 'package:flutter_calendar/presentation/widgets/widgets.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:timelines/timelines.dart';
 
 class EventsOverviewPage extends StatelessWidget {
   EventsOverviewPage({Key? key, required this.dateBarDate}) : super(key: key);
@@ -52,12 +53,22 @@ class EventsOverviewView extends StatelessWidget {
             .toList();
 
         if (events.isEmpty) {
-          return Center(
-              child:
-                  SizedBox(height: 50, width: 50, child: Text("NASCHBSCWNC")));
+          return Align(
+            child: Container(
+              width: MediaQuery.of(context).size.width / 2,
+              height: 200,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                image: DecorationImage(
+                    image: AssetImage("assets/images/img1.png"),
+                    fit: BoxFit.fill),
+              ),
+            ),
+          );
         } else {
           return Expanded(
             child: ListView.builder(
+              physics: BouncingScrollPhysics(),
               itemCount: events.length,
               itemBuilder: (_, int index) {
                 events.sort((a, b) =>
@@ -120,21 +131,46 @@ class EventsOverviewView extends StatelessWidget {
                       event.date!.year,
                     );
                   }
-                  return AnimationConfiguration.staggeredList(
-                      position: index,
-                      child: SlideAnimation(
-                        child: FadeInAnimation(
-                          child: Row(
-                            children: [
-                              GestureDetector(
-                                onTap: () =>
-                                    _showBottomSheet(context, event, index),
-                                child: TaskTile(event),
-                              )
-                            ],
+                  return TimelineTile(
+                    nodePosition: 0.05,
+                    contents: Container(
+                      padding: EdgeInsets.all(8.0),
+                      margin: EdgeInsets.only(top: 10,bottom: 10),
+                      child: Text('Read book from 9.00 PM to 10.00 PM', style: TextStyle(fontSize: 20,  decoration: event.isCompleted == 1 ? TextDecoration.lineThrough : null)),
+                    ),
+                    node: TimelineNode(
+                      indicator: Card(
+                          margin: EdgeInsets.zero,
+                          child: Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Text(event.startTime!.format(context)),
                           ),
                         ),
-                      ));
+                      startConnector: SolidLineConnector(
+                        thickness: 4,
+                      ),
+                      endConnector: SolidLineConnector(
+                        thickness: 4,
+                      ),
+                    ),
+                  );
+
+                  /* AnimationConfiguration.staggeredList(
+                    position: index,
+                    child: SlideAnimation(
+                      child: FadeInAnimation(
+                        child: Row(
+                          children: [
+                            GestureDetector(
+                              onTap: () =>
+                                  _showBottomSheet(context, event, index),
+                              child: TaskTile(event),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                  ); */
                 } else {
                   return Text("dscvjisv");
                 }

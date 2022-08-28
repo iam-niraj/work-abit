@@ -82,7 +82,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     /* final localizations = MaterialLocalizations.of(context);
     final formattedTimeOfDay = localizations.formatTimeOfDay(_timeOfDay); */
     return Scaffold(
-      appBar: MyAppBar(
+      /* appBar: MyAppBar(
         widget: GestureDetector(
           onTap: () {
             Get.back();
@@ -93,7 +93,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
             color: Get.isDarkMode ? Colors.white : Colors.black,
           ),
         ),
-      ),
+      ), */
       body: Container(
         padding: const EdgeInsets.only(left: 20, right: 20),
         child: SingleChildScrollView(

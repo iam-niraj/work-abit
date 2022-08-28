@@ -14,6 +14,7 @@ import 'package:flutter_calendar/presentation/widgets/widgets.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_calendar/presentation/utils/colors.dart' as color;
 import 'package:date_picker_timeline/date_picker_timeline.dart';
 
 class HomePageView extends StatelessWidget {
@@ -50,13 +51,15 @@ class _HomePageState extends State<HomePage> {
     super.initState();
   }
 
+  GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
+
   @override
   Widget build(BuildContext context) {
     final list = context.select((HomeCubit cubit) => cubit.state.items);
     final item = list.firstWhereOrNull((element) =>
         element.start.date == DateFormat('yyyy-MM-dd').format(_selectedDate));
     return Scaffold(
-        appBar: MyAppBar(
+      appBar: MyAppBar(
           widget: ObxValue(
             (data) => DayNightSwitcherIcon(
               isDarkModeEnabled: _themeController.isLightTheme.value,
@@ -77,40 +80,167 @@ class _HomePageState extends State<HomePage> {
             false.obs,
           ),
         ),
-        body: Column(
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              color.AppColor.gradientFirst.withOpacity(0.9),
+              color.AppColor.gradientSecond,
+            ],
+            begin: const FractionalOffset(0.0, 0.4),
+            end: Alignment.topRight,
+          ),
+        ),
+        child: Column(
           children: [
+            /* Container(
+              height: 160.0,
+              child: Stack(
+                children: <Widget>[
+                  Container(
+                    color: Colors.red,
+                    width: MediaQuery.of(context).size.width,
+                    height: 100.0,
+                    child: Center(
+                      child: Text(
+                        "Home",
+                        style: TextStyle(color: Colors.white, fontSize: 18.0),
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    top: 80.0,
+                    left: 0.0,
+                    right: 0.0,
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 20.0),
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(1.0),
+                            border: Border.all(
+                                color: Colors.grey.withOpacity(0.5),
+                                width: 1.0),
+                            color: Colors.white),
+                        child: Row(
+                          children: [
+                            IconButton(
+                              icon: Icon(
+                                Icons.menu,
+                                color: Colors.red,
+                              ),
+                              onPressed: () {
+                                print("your menu action here");
+                                _scaffoldKey.currentState!.openDrawer();
+                              },
+                            ),
+                            Expanded(
+                              child: TextField(
+                                decoration: InputDecoration(
+                                  hintText: "Search",
+                                ),
+                              ),
+                            ),
+                            IconButton(
+                              icon: Icon(
+                                Icons.search,
+                                color: Colors.red,
+                              ),
+                              onPressed: () {
+                                print("your menu action here");
+                              },
+                            ),
+                            IconButton(
+                              icon: Icon(
+                                Icons.notifications,
+                                color: Colors.red,
+                              ),
+                              onPressed: () {
+                                print("your menu action here");
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ), */
+            //TopBar(actions: [], title: "Thus",),
             _addTaskBar(item),
             _addDateBar(list),
-            EventsOverviewPage(
-              dateBarDate: _selectedDate,
+            SizedBox(
+              height: 20,
+            ),
+            Expanded(
+              child: Container(
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(70),
+                    )),
+                child: Column(
+                  children: [
+                    _addEventsTab(),
+                    EventsOverviewPage(
+                      dateBarDate: _selectedDate,
+                    ),
+                  ],
+                ),
+              ),
             ),
           ],
-        ));
+        ),
+      ),
+    );
+  }
+
+  _addEventsTab() {
+    return Container(
+      margin: const EdgeInsets.only(
+        left: 20,
+        right: 20,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            "Events",
+            style: subHeadingStyle,
+          ),
+          /* MyButton(
+            label: "+ Add Task",
+            onTap: () => Navigator.of(context).push(AddTaskPage.route()),
+          ), */
+        ],
+      ),
+    );
   }
 
   _addDateBar(List<Items> list) {
     return Container(
-      margin: const EdgeInsets.only(top: 20, left: 20),
+      margin: const EdgeInsets.only(top: 10, left: 20),
       child: DatePicker(
         DateTime(DateTime.now().year, DateTime.now().month),
-        height: 100,
-        width: 80,
+        height: 80,
+        width: 60,
         initialSelectedDate: DateTime.now(),
         selectionColor: primaryClr,
         selectedTextColor: Colors.white,
         choiceDates: list.map((e) => DateTime.parse(e.start.date)).toList(),
+        choiceColor: Colors.amber,
         deactivatedColor: Colors.redAccent.shade100,
         dateTextStyle: GoogleFonts.lato(
           textStyle: const TextStyle(
-              fontSize: 20, fontWeight: FontWeight.w600, color: Colors.grey),
+              fontSize: 18, fontWeight: FontWeight.w600, color: Colors.grey),
         ),
         dayTextStyle: GoogleFonts.lato(
           textStyle: const TextStyle(
-              fontSize: 16, fontWeight: FontWeight.w600, color: Colors.grey),
+              fontSize: 14, fontWeight: FontWeight.w600, color: Colors.grey),
         ),
         monthTextStyle: GoogleFonts.lato(
           textStyle: const TextStyle(
-              fontSize: 14, fontWeight: FontWeight.w600, color: Colors.grey),
+              fontSize: 12, fontWeight: FontWeight.w600, color: Colors.grey),
         ),
         onDateChange: (date) {
           setState(() {
@@ -126,7 +256,11 @@ class _HomePageState extends State<HomePage> {
   _addTaskBar(Items? item) {
     String? data = item?.summary ?? "";
     return Container(
-      margin: const EdgeInsets.only(left: 20, right: 20, top: 10),
+      margin: const EdgeInsets.only(
+        left: 20,
+        right: 20,
+        top: 10,
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -144,14 +278,17 @@ class _HomePageState extends State<HomePage> {
                         'Today, ' + data,
                         style: headingStyle,
                       )
-                    : Text(data)
+                    : Text(
+                        data,
+                        style: titleStyle,
+                      )
               ],
             ),
           ),
-          MyButton(
+          /* MyButton(
             label: "+ Add Task",
             onTap: () => Navigator.of(context).push(AddTaskPage.route()),
-          ),
+          ), */
         ],
       ),
     );
