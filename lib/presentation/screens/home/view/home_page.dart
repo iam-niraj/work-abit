@@ -60,7 +60,6 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       body: SafeArea(
         child: Container(
-          //TODO: Add colors to container.
           decoration: BoxDecoration(
             color: Colors.white,
           ),
@@ -234,10 +233,6 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
           ),
-          /* MyButton(
-            label: "+ Add Task",
-            onTap: () => Navigator.of(context).push(AddTaskPage.route()),
-          ), */
         ],
       ),
     );
