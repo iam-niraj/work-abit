@@ -49,8 +49,10 @@ dependencies:
   flutter_bloc: ^8.0.1
   equatable: ^2.0.3
   rxdart:
-  timelines: ^0.1.0
-  uuid: 3.0.6
+  timeline_tile: ^2.0.0
+  uuid: ^3.0.6
+  weather_icons: ^3.0.0
+  step_progress_indicator: ^1.0.2
 
 dev_dependencies:
   flutter_test:
@@ -76,6 +78,7 @@ flutter_icons:
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter.
+
 flutter:
 
   # The following line ensures that the Material Icons font is

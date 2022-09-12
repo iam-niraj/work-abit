@@ -14,7 +14,6 @@ import 'package:flutter_calendar/presentation/widgets/widgets.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import 'package:flutter_calendar/presentation/utils/colors.dart' as color;
 import 'package:date_picker_timeline/date_picker_timeline.dart';
 
 class HomePageView extends StatelessWidget {
@@ -59,137 +58,80 @@ class _HomePageState extends State<HomePage> {
     final item = list.firstWhereOrNull((element) =>
         element.start.date == DateFormat('yyyy-MM-dd').format(_selectedDate));
     return Scaffold(
-      appBar: MyAppBar(
-          widget: ObxValue(
-            (data) => DayNightSwitcherIcon(
-              isDarkModeEnabled: _themeController.isLightTheme.value,
-              onStateChanged: (state) {
-                Get.isDarkMode
-                    ? commonToast("Switched to Light Theme")
-                    : commonToast("Switched to Dark Theme");
-                _themeController.isLightTheme.value = state;
-                Get.changeThemeMode(
-                  _themeController.isLightTheme.value
-                      ? ThemeMode.light
-                      : ThemeMode.dark,
-                );
-                _themeController.saveThemeStatus();
-                //  _taskController.getThemeStatus(state);
-              },
-            ),
-            false.obs,
+      body: SafeArea(
+        child: Container(
+          //TODO: Add colors to container.
+          decoration: BoxDecoration(
+            color: Colors.white,
           ),
-        ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              color.AppColor.gradientFirst.withOpacity(0.9),
-              color.AppColor.gradientSecond,
-            ],
-            begin: const FractionalOffset(0.0, 0.4),
-            end: Alignment.topRight,
-          ),
-        ),
-        child: Column(
-          children: [
-            /* Container(
-              height: 160.0,
-              child: Stack(
-                children: <Widget>[
-                  Container(
-                    color: Colors.red,
-                    width: MediaQuery.of(context).size.width,
-                    height: 100.0,
-                    child: Center(
-                      child: Text(
-                        "Home",
-                        style: TextStyle(color: Colors.white, fontSize: 18.0),
+          child: Column(
+            children: [
+              Stack(
+                alignment: Alignment.center,
+                children: [
+                  Align(
+                    widthFactor: 10,
+                    alignment: Alignment.centerLeft,
+                    child: ObxValue(
+                      (data) => DayNightSwitcherIcon(
+                        isDarkModeEnabled: _themeController.isLightTheme.value,
+                        onStateChanged: (state) {
+                          Get.isDarkMode
+                              ? commonToast("Switched to Light Theme")
+                              : commonToast("Switched to Dark Theme");
+                          _themeController.isLightTheme.value = state;
+                          Get.changeThemeMode(
+                            _themeController.isLightTheme.value
+                                ? ThemeMode.light
+                                : ThemeMode.dark,
+                          );
+                          _themeController.saveThemeStatus();
+                          //  _taskController.getThemeStatus(state);
+                        },
+                      ),
+                      false.obs,
+                    ),
+                  ),
+                  Center(
+                    child: Text(
+                      "Work-A-Bit",
+                      style: TextStyle(
+                        fontSize: 25,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.teal.withOpacity(0.9),
                       ),
                     ),
                   ),
-                  Positioned(
-                    top: 80.0,
-                    left: 0.0,
-                    right: 0.0,
-                    child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 20.0),
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(1.0),
-                            border: Border.all(
-                                color: Colors.grey.withOpacity(0.5),
-                                width: 1.0),
-                            color: Colors.white),
-                        child: Row(
-                          children: [
-                            IconButton(
-                              icon: Icon(
-                                Icons.menu,
-                                color: Colors.red,
-                              ),
-                              onPressed: () {
-                                print("your menu action here");
-                                _scaffoldKey.currentState!.openDrawer();
-                              },
-                            ),
-                            Expanded(
-                              child: TextField(
-                                decoration: InputDecoration(
-                                  hintText: "Search",
-                                ),
-                              ),
-                            ),
-                            IconButton(
-                              icon: Icon(
-                                Icons.search,
-                                color: Colors.red,
-                              ),
-                              onPressed: () {
-                                print("your menu action here");
-                              },
-                            ),
-                            IconButton(
-                              icon: Icon(
-                                Icons.notifications,
-                                color: Colors.red,
-                              ),
-                              onPressed: () {
-                                print("your menu action here");
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+                  Align(
+                    widthFactor: 10,
+                    alignment: Alignment.centerRight,
+                    child: IconButton(onPressed: () => Navigator.pushNamed(context, "/stats"), icon: Icon(Icons.query_stats))
                   )
                 ],
               ),
-            ), */
-            //TopBar(actions: [], title: "Thus",),
-            _addTaskBar(item),
-            _addDateBar(list),
-            SizedBox(
-              height: 20,
-            ),
-            Expanded(
-              child: Container(
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
-                      topRight: Radius.circular(70),
-                    )),
-                child: Column(
-                  children: [
-                    _addEventsTab(),
-                    EventsOverviewPage(
-                      dateBarDate: _selectedDate,
-                    ),
-                  ],
+              _addTaskBar(item),
+              _addDateBar(list),
+              SizedBox(
+                height: 20,
+              ),
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                          topRight: Radius.circular(50),
+                          topLeft: Radius.circular(50))),
+                  child: Column(
+                    children: [
+                      _addEventsTab(),
+                      EventsOverviewPage(
+                        dateBarDate: _selectedDate,
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -197,21 +139,27 @@ class _HomePageState extends State<HomePage> {
 
   _addEventsTab() {
     return Container(
-      margin: const EdgeInsets.only(
-        left: 20,
-        right: 20,
-      ),
+      margin: const EdgeInsets.only(left: 20, right: 20),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            "Events",
-            style: subHeadingStyle,
+            "Events:-",
+            style: GoogleFonts.lato(
+              fontSize: 24,
+              color: Colors.teal.withOpacity(0.8),
+              fontWeight: FontWeight.bold,
+            ),
           ),
-          /* MyButton(
-            label: "+ Add Task",
+          GestureDetector(
             onTap: () => Navigator.of(context).push(AddTaskPage.route()),
-          ), */
+            child: Image(
+              image: AssetImage(
+                "assets/images/calendar.png",
+              ),
+              height: 50,
+            ),
+          )
         ],
       ),
     );
@@ -221,7 +169,9 @@ class _HomePageState extends State<HomePage> {
     return Container(
       margin: const EdgeInsets.only(top: 10, left: 20),
       child: DatePicker(
-        DateTime(DateTime.now().year, DateTime.now().month),
+        DateTime(
+          DateTime.now().year,
+        ),
         height: 80,
         width: 60,
         initialSelectedDate: DateTime.now(),
@@ -248,7 +198,6 @@ class _HomePageState extends State<HomePage> {
           });
         },
         controller: _controller,
-        daysCount: 60,
       ),
     );
   }

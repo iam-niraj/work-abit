@@ -5,6 +5,7 @@ import 'package:flutter_calendar/data/repositories/events_repository_Impl/event_
 import 'package:flutter_calendar/domain/usecases/events_usecases/events_usecases.dart';
 import 'package:flutter_calendar/presentation/screens/add_event/view/view.dart';
 import 'package:flutter_calendar/presentation/screens/home/view/view.dart';
+import 'package:flutter_calendar/presentation/screens/stats/view/stats_page.dart';
 import 'package:flutter_calendar/presentation/utils/utils.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'bloc_observer.dart';
@@ -75,6 +76,7 @@ class MyApp extends StatelessWidget {
         routes: {
           "/addEvent": (context) => AddTaskScreen(),
           "/home": (context) => HomePageView(),
+          "/stats": (context) => StatsPage(),
         },
         home: HomePageView(),
       ),

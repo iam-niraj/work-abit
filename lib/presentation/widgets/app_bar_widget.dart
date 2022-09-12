@@ -1,14 +1,12 @@
-
-
 import 'package:flutter/material.dart';
 
 class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
-  MyAppBar({Key? key, this.widget}) : super(key: key);
+  const MyAppBar({Key? key, this.widget}) : super(key: key);
 
   final Widget? widget;
 
   @override
-  Size get preferredSize => const Size.fromHeight(60.0);
+  Size get preferredSize => const Size.fromHeight(50.0);
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +19,14 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
           bottom: Radius.circular(10),
         ),
       ),
-      leading: widget,
+      leading: widget == null
+          ? GestureDetector(
+              onTap: () {
+                Navigator.pop(context);
+              },
+              child: Icon(Icons.arrow_back_ios, size: 20, color: Colors.white),
+            )
+          : widget,
     );
   }
 }

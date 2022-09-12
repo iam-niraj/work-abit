@@ -1,186 +1,104 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_calendar/data/models/event_model/event_model.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:timeline_tile/timeline_tile.dart';
 import '../utils/aap_theme/theme.dart';
 
-class TaskTile extends StatelessWidget {
-  final EventModel? task;
-  const TaskTile(this.task);
+class TaskTile extends StatefulWidget {
+  final EventModel? event;
+  const TaskTile(this.event);
+
+  @override
+  State<TaskTile> createState() => _TaskTileState();
+}
+
+class _TaskTileState extends State<TaskTile> {
+  bool isVisible = false;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      width: MediaQuery.of(context).size.width,
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        //  width: SizeConfig.screenWidth * 0.78,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          color: _getBGClr(task?.color ?? 0),
-        ),
-        child: Row(children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  task?.title ?? "",
-                  style: GoogleFonts.lato(
-                    textStyle: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white),
-                  ),
-                ),
-                const SizedBox(
-                  height: 12,
-                ),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.access_time_rounded,
-                      color: Colors.grey[200],
-                      size: 18,
-                    ),
-                    Text(
-                      " End time : ${task!.endTime}",
-                      style: GoogleFonts.lato(
-                        textStyle:
-                            TextStyle(fontSize: 13, color: Colors.grey[100]),
-                      ),
-                    ),
-                  ],
-                ),
-                // const SizedBox(
-                //   height: 12,
-                // ),
-                /* Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.access_time_rounded,
-                      color: Colors.grey[200],
-                      size: 18,
-                    ),
-                    const SizedBox(width: 4),
-                    /* Text(
-                      "${task!.startTime!.format(context)} - ${task!.endTime}",
-                      style: GoogleFonts.lato(
-                        textStyle:
-                            TextStyle(fontSize: 13, color: Colors.grey[100]),
-                      ),
-                    ), */
-                  ],
-                ), */
-                // const SizedBox(height: 12),
-                /* Text(
-                  task?.note ?? "",
-                  style: GoogleFonts.lato(
-                    textStyle: TextStyle(fontSize: 15, color: Colors.grey[100]),
-                  ),
-                ), */
-              ],
-            ),
-          ),
-          /* Container(
-            margin: const EdgeInsets.symmetric(horizontal: 10),
-            height: 60,
-            width: 0.5,
-            color: Colors.grey[200]!.withOpacity(0.7),
-          ), */
-          /* RotatedBox(
-            quarterTurns: 3,
+    return TimelineTile(
+      alignment: TimelineAlign.manual,
+      lineXY: 0.23,
+      beforeLineStyle: LineStyle(color: Color(0xFF63d4c0).withOpacity(0.7)),
+      // isFirst: index == 0 ? true : false,
+      indicatorStyle: IndicatorStyle(
+        color: Color(0xFF63d4c0),
+        indicatorXY: 0.3,
+        drawGap: true,
+        width: 30,
+        height: 30,
+      ),
+      // isLast: index == events.length - 1 ? true : false,
+      startChild: Center(
+        child: Padding(
+          padding: const EdgeInsets.only(right: 10),
+          child: Container(
+            alignment: const Alignment(0.0, -0.50),
             child: Text(
-              task!.isCompleted == 1 ? "COMPLETED" : "TODO",
+              widget.event!.startTime!.format(context),
+              textAlign: TextAlign.center,
               style: GoogleFonts.lato(
-                textStyle: const TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white),
+                fontSize: 18,
+                color: Color(0xFF6fddaf).withOpacity(0.6),
+                fontWeight: FontWeight.w800,
               ),
             ),
-          ), */
-        ]),
+          ),
+        ),
+      ),
+      endChild: Padding(
+        padding:
+            const EdgeInsets.only(left: 16, right: 10, top: 10, bottom: 30),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            GestureDetector(
+              child: RichText(
+                text: TextSpan(
+                  text: widget.event!.title!,
+                  style: GoogleFonts.lato(
+                    fontSize: 23,
+                    color: Color(0xFF6fddaf).withOpacity(0.8),
+                    fontWeight: FontWeight.bold,
+                    decoration: widget.event!.isCompleted == 1 ? TextDecoration.lineThrough : null,
+                  ),
+                  children: [
+                    TextSpan(
+                      text: "  from: " +
+                          widget.event!.startTime!.format(context) +
+                          " to " +
+                          widget.event!.endTime!,
+                      style: GoogleFonts.lato(
+                        fontSize: 18,
+                        color: Color(0xFF6fddaf).withOpacity(0.8),
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              onTap: () => setState(
+                () {
+                  isVisible = !isVisible;
+                },
+              ),
+            ),
+            Visibility(
+              visible: isVisible,
+              child: Text(
+                widget.event!.note!,
+                style: GoogleFonts.lato(
+                  fontSize: 18,
+                  color: Color(0xFF6fddaf).withOpacity(0.6),
+                  fontWeight: FontWeight.normal,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
-    /* Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      width: MediaQuery.of(context).size.width,
-      margin: const EdgeInsets.only(bottom: 12),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          color: _getBGClr(task?.color ?? 0),
-        ),
-        child: Row(children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  task?.title ?? "",
-                  style: GoogleFonts.lato(
-                    textStyle: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white),
-                  ),
-                ),
-                const SizedBox(
-                  height: 12,
-                ),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.access_time_rounded,
-                      color: Colors.grey[200],
-                      size: 18,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      "${task!.startTime!.format(context)} - ${task!.endTime}",
-                      style: GoogleFonts.lato(
-                        textStyle:
-                            TextStyle(fontSize: 13, color: Colors.grey[100]),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  task?.note ?? "",
-                  style: GoogleFonts.lato(
-                    textStyle: TextStyle(fontSize: 15, color: Colors.grey[100]),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 10),
-            height: 60,
-            width: 0.5,
-            color: Colors.grey[200]!.withOpacity(0.7),
-          ),
-          RotatedBox(
-            quarterTurns: 3,
-            child: Text(
-              task!.isCompleted == 1 ? "COMPLETED" : "TODO",
-              style: GoogleFonts.lato(
-                textStyle: const TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white),
-              ),
-            ),
-          ),
-        ]),
-      ),
-    ); */
   }
 
   _getBGClr(int no) {

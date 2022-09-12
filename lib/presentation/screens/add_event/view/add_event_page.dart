@@ -6,6 +6,7 @@ import 'package:flutter_calendar/domain/entities/entities.dart';
 import 'package:flutter_calendar/domain/usecases/usecases.dart';
 import 'package:flutter_calendar/presentation/screens/add_event/bloc/add_event_bloc.dart';
 import 'package:flutter_calendar/presentation/utils/utils.dart';
+import 'package:flutter_calendar/presentation/widgets/tool_tip.dart';
 import 'package:uuid/uuid.dart';
 
 import 'package:get/get.dart';
@@ -79,150 +80,154 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
 
   @override
   Widget build(BuildContext context) {
-    /* final localizations = MaterialLocalizations.of(context);
-    final formattedTimeOfDay = localizations.formatTimeOfDay(_timeOfDay); */
     return Scaffold(
-      /* appBar: MyAppBar(
-        widget: GestureDetector(
-          onTap: () {
-            Get.back();
-          },
-          child: Icon(
-            Icons.arrow_back_ios,
-            size: 20,
-            color: Get.isDarkMode ? Colors.white : Colors.black,
-          ),
-        ),
-      ), */
-      body: Container(
-        padding: const EdgeInsets.only(left: 20, right: 20),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text("Add Task", style: headingStyle),
-              InputField(
-                title: "Title",
-                hint: "Enter your title",
-                controller: _titleController,
-              ),
-              InputField(
-                title: "Note",
-                hint: "Enter your note",
-                controller: _noteController,
-              ),
-              InputField(
-                title: "Date",
-                hint: DateFormat.yMd().format(_selectedDate),
-                widget: IconButton(
-                  onPressed: () {
-                    _getDateFromUser();
-                  },
-                  icon: const Icon(Icons.calendar_today_outlined),
-                ),
-              ),
-              Row(
-                children: [
-                  Expanded(
-                      child: InputField(
-                    title: "Start Time",
-                    hint: _timeOfDay.format(context),
-                    widget: IconButton(
-                      onPressed: () async {
-                        _getTimeFromUser(isStartTime: true);
-                      },
-                      icon: const Icon(Icons.access_time_rounded),
-                    ),
-                  )),
-                  const SizedBox(
-                    width: 12,
-                  ),
-                  Expanded(
-                      child: InputField(
-                    title: "End Time",
-                    hint: _endTime,
-                    widget: IconButton(
-                      onPressed: () {
-                        _getTimeFromUser(isStartTime: false);
-                      },
-                      icon: const Icon(Icons.access_time_rounded),
-                    ),
-                  ))
-                ],
-              ),
-              InputField(
-                title: "Remind",
-                hint: "Remind $_selectedRemind minutes early",
-                widget: DropdownButton(
-                  icon: const Icon(Icons.keyboard_arrow_down),
-                  iconSize: 32,
-                  elevation: 4,
-                  style: subtitleStyle,
-                  underline: Container(
-                    height: 0,
-                  ),
-                  items: remindList.map<DropdownMenuItem<String>>((int value) {
-                    return DropdownMenuItem<String>(
-                      value: value.toString(),
-                      child: Text(value.toString()),
-                    );
-                  }).toList(),
-                  onChanged: (String? newRemindValue) {
-                    setState(() {
-                      _selectedRemind = int.parse(newRemindValue!);
-                    });
-                  },
-                ),
-              ),
-              InputField(
-                title: "Repeat",
-                hint: _selectedRepeat,
-                widget: DropdownButton(
-                  icon: const Icon(Icons.keyboard_arrow_down),
-                  iconSize: 32,
-                  elevation: 4,
-                  style: subtitleStyle,
-                  underline: Container(
-                    height: 0,
-                  ),
-                  items:
-                      repeatList.map<DropdownMenuItem<String>>((String? value) {
-                    return DropdownMenuItem<String>(
-                      value: value.toString(),
-                      child: Text(
-                        value!,
-                        style: const TextStyle(color: Colors.grey),
+      body: SafeArea(
+        child: CustomScrollView(
+          slivers: [
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: Container(
+                padding: const EdgeInsets.only(left: 20, right: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    MyTooltip(
+                      message: 'Back',
+                      onTap: () => Navigator.pop(context),
+                      child: Icon(
+                        Icons.arrow_back_ios,
                       ),
-                    );
-                  }).toList(),
-                  onChanged: (String? newRepeatValue) {
-                    setState(() {
-                      _selectedRepeat = newRepeatValue!;
-                    });
-                  },
+                    ),
+                    SizedBox(
+                      height: 5,
+                    ),
+                    Text("Add Task", style: headingStyle),
+                    InputField(
+                      title: "Title",
+                      hint: "Enter your title",
+                      controller: _titleController,
+                    ),
+                    InputField(
+                      title: "Note",
+                      hint: "Enter your note",
+                      controller: _noteController,
+                    ),
+                    InputField(
+                      title: "Date",
+                      hint: DateFormat.yMd().format(_selectedDate),
+                      widget: IconButton(
+                        onPressed: () {
+                          _getDateFromUser();
+                        },
+                        icon: const Icon(Icons.calendar_today_outlined),
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                            child: InputField(
+                              title: "Start Time",
+                              hint: _timeOfDay.format(context),
+                              widget: IconButton(
+                                onPressed: () async {
+                                  _getTimeFromUser(isStartTime: true);
+                                },
+                                icon: const Icon(Icons.access_time_rounded),
+                              ),
+                            )),
+                        const SizedBox(
+                          width: 12,
+                        ),
+                        Expanded(
+                            child: InputField(
+                              title: "End Time",
+                              hint: _endTime,
+                              widget: IconButton(
+                                onPressed: () {
+                                  _getTimeFromUser(isStartTime: false);
+                                },
+                                icon: const Icon(Icons.access_time_rounded),
+                              ),
+                            ))
+                      ],
+                    ),
+                    InputField(
+                      title: "Remind",
+                      hint: "Remind $_selectedRemind minutes early",
+                      widget: DropdownButton(
+                        icon: const Icon(Icons.keyboard_arrow_down),
+                        iconSize: 32,
+                        elevation: 4,
+                        style: subtitleStyle,
+                        underline: Container(
+                          height: 0,
+                        ),
+                        items:
+                        remindList.map<DropdownMenuItem<String>>((int value) {
+                          return DropdownMenuItem<String>(
+                            value: value.toString(),
+                            child: Text(value.toString()),
+                          );
+                        }).toList(),
+                        onChanged: (String? newRemindValue) {
+                          setState(() {
+                            _selectedRemind = int.parse(newRemindValue!);
+                          });
+                        },
+                      ),
+                    ),
+                    InputField(
+                      title: "Repeat",
+                      hint: _selectedRepeat,
+                      widget: DropdownButton(
+                        icon: const Icon(Icons.keyboard_arrow_down),
+                        iconSize: 32,
+                        elevation: 4,
+                        style: subtitleStyle,
+                        underline: Container(
+                          height: 0,
+                        ),
+                        items: repeatList
+                            .map<DropdownMenuItem<String>>((String? value) {
+                          return DropdownMenuItem<String>(
+                            value: value.toString(),
+                            child: Text(
+                              value!,
+                              style: const TextStyle(color: Colors.grey),
+                            ),
+                          );
+                        }).toList(),
+                        onChanged: (String? newRepeatValue) {
+                          setState(() {
+                            _selectedRepeat = newRepeatValue!;
+                          });
+                        },
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 18,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        _colorPalette(),
+                        MyButton(
+                          label: "Create Event",
+                          onTap: () => _validateDate(),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    )
+                  ],
                 ),
               ),
-              const SizedBox(
-                height: 18,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  _colorPalette(),
-                  MyButton(
-                    label: "Create Event",
-                    onTap: () => _validateDate(),
-                  )
-                ],
-              ),
-              const SizedBox(
-                height: 10,
-              )
-            ],
-          ),
+            )
+          ],
         ),
-      ),
+        ),
     );
   }
 
