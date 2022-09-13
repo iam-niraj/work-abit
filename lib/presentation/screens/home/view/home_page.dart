@@ -237,10 +237,6 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
           ),
-          /* MyButton(
-            label: "+ Add Task",
-            onTap: () => Navigator.of(context).push(AddTaskPage.route()),
-          ), */
         ],
       ),
     );
