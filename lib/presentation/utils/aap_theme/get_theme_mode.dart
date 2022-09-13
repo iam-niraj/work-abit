@@ -13,9 +13,11 @@ class GetThemeMode extends GetxController {
   }
 
   getThemeStatus() async {
-    var _isLight = _prefs.then((SharedPreferences prefs) {
-      return prefs.getBool('theme') ?? true;
-    }).obs;
+    var _isLight = _prefs.then(
+      (SharedPreferences prefs) {
+        return prefs.getBool('theme') ?? true;
+      },
+    ).obs;
     isLightTheme.value = await _isLight.value;
     Get.changeThemeMode(isLightTheme.value ? ThemeMode.light : ThemeMode.dark);
     update();

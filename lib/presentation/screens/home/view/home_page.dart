@@ -50,8 +50,6 @@ class _HomePageState extends State<HomePage> {
     super.initState();
   }
 
-  GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
-
   @override
   Widget build(BuildContext context) {
     final list = context.select((HomeCubit cubit) => cubit.state.items);
@@ -217,24 +215,26 @@ class _HomePageState extends State<HomePage> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Container(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  DateFormat.yMMMMd().format(_selectedDate),
-                  style: subHeadingStyle,
-                ),
-                DateFormat('yyyy-MM-dd').format(_selectedDate) ==
-                        DateFormat('yyyy-MM-dd').format(DateTime.now())
-                    ? Text(
-                        'Today, ' + data,
-                        style: headingStyle,
-                      )
-                    : Text(
-                        data,
-                        style: titleStyle,
-                      )
-              ],
+            child: Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    DateFormat.yMMMMd().format(_selectedDate),
+                    style: subHeadingStyle,
+                  ),
+                  DateFormat('yyyy-MM-dd').format(_selectedDate) ==
+                          DateFormat('yyyy-MM-dd').format(DateTime.now())
+                      ? Text(
+                          'Today, ' + data,
+                          style: headingStyle,
+                        )
+                      : Text(
+                          data,
+                          style: headingStyle1,
+                        )
+                ],
+              ),
             ),
           ),
           /* MyButton(

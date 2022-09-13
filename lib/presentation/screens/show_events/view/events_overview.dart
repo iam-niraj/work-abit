@@ -14,7 +14,6 @@ import 'package:intl/intl.dart';
 
 class EventsOverviewPage extends StatelessWidget {
   EventsOverviewPage({Key? key, required this.dateBarDate}) : super(key: key);
-
   final DateTime dateBarDate;
 
   @override
@@ -34,6 +33,7 @@ class EventsOverviewView extends StatelessWidget {
   EventsOverviewView({Key? key, required this.dateBarDate}) : super(key: key);
 
   final DateTime dateBarDate;
+  bool expandOnTextTap = false;
 
   @override
   Widget build(BuildContext context) {

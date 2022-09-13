@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_calendar/data/repositories/repositories.dart';
 import 'package:flutter_calendar/domain/entities/entities.dart';
 import 'package:flutter_calendar/domain/usecases/usecases.dart';
 import 'package:flutter_calendar/presentation/screens/add_event/bloc/add_event_bloc.dart';
@@ -267,13 +266,14 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
 
   _showTimePicker() {
     return showTimePicker(
-        context: context,
-        initialEntryMode: TimePickerEntryMode.input,
-        initialTime: TimeOfDay.fromDateTime(
-          DateTime.now().add(
-            Duration(minutes: 1),
-          ),
-        ));
+      context: context,
+      initialEntryMode: TimePickerEntryMode.input,
+      initialTime: TimeOfDay.fromDateTime(
+        DateTime.now().add(
+          Duration(minutes: 1),
+        ),
+      ),
+    );
   }
 
   _colorPalette() {
@@ -327,14 +327,17 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     if (_titleController.text.isNotEmpty && _noteController.text.isNotEmpty) {
       _addTaskToDb();
     } else if (_titleController.text.isEmpty || _noteController.text.isEmpty) {
-      Get.snackbar("Required", "All fields are required!",
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.white,
-          icon: const Icon(
-            Icons.warning_amber_rounded,
-            color: pinkClr,
-          ),
-          colorText: pinkClr);
+      Get.snackbar(
+        "Required",
+        "All fields are required!",
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.white,
+        icon: const Icon(
+          Icons.warning_amber_rounded,
+          color: pinkClr,
+        ),
+        colorText: pinkClr,
+      );
     }
   }
 
