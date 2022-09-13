@@ -50,13 +50,9 @@ class AddTaskScreen extends StatefulWidget {
 
 class _AddTaskScreenState extends State<AddTaskScreen> {
   DateTime _selectedDate = DateTime.now();
-
   String _endTime = "9:30 PM";
-
   int _selectedRemind = 5;
-
   int _selectedColor = 0;
-
   TimeOfDay _timeOfDay = TimeOfDay.now();
 
   final TextEditingController _titleController = TextEditingController();
@@ -81,6 +77,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xFF125252),
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
@@ -96,12 +93,13 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                       onTap: () => Navigator.pop(context),
                       child: Icon(
                         Icons.arrow_back_ios,
+                        color: Color(0xFF63d4c0),
                       ),
                     ),
                     SizedBox(
                       height: 5,
                     ),
-                    Text("Add Task", style: headingStyle),
+                    Text("Add Task", style: subHeadingStyle),
                     InputField(
                       title: "Title",
                       hint: "Enter your title",
@@ -116,6 +114,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                       title: "Date",
                       hint: DateFormat.yMd().format(_selectedDate),
                       widget: IconButton(
+                        color: Colors.grey[400],
                         onPressed: () {
                           _getDateFromUser();
                         },
@@ -126,29 +125,31 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                       children: [
                         Expanded(
                             child: InputField(
-                              title: "Start Time",
-                              hint: _timeOfDay.format(context),
-                              widget: IconButton(
-                                onPressed: () async {
-                                  _getTimeFromUser(isStartTime: true);
-                                },
-                                icon: const Icon(Icons.access_time_rounded),
-                              ),
-                            )),
+                          title: "Start Time",
+                          hint: _timeOfDay.format(context),
+                          widget: IconButton(
+                            color: Colors.grey[400],
+                            onPressed: () async {
+                              _getTimeFromUser(isStartTime: true);
+                            },
+                            icon: const Icon(Icons.access_time_rounded),
+                          ),
+                        )),
                         const SizedBox(
                           width: 12,
                         ),
                         Expanded(
                             child: InputField(
-                              title: "End Time",
-                              hint: _endTime,
-                              widget: IconButton(
-                                onPressed: () {
-                                  _getTimeFromUser(isStartTime: false);
-                                },
-                                icon: const Icon(Icons.access_time_rounded),
-                              ),
-                            ))
+                          title: "End Time",
+                          hint: _endTime,
+                          widget: IconButton(
+                            color: Colors.grey[400],
+                            onPressed: () {
+                              _getTimeFromUser(isStartTime: false);
+                            },
+                            icon: const Icon(Icons.access_time_rounded),
+                          ),
+                        ))
                       ],
                     ),
                     InputField(
@@ -162,8 +163,8 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                         underline: Container(
                           height: 0,
                         ),
-                        items:
-                        remindList.map<DropdownMenuItem<String>>((int value) {
+                        items: remindList
+                            .map<DropdownMenuItem<String>>((int value) {
                           return DropdownMenuItem<String>(
                             value: value.toString(),
                             child: Text(value.toString()),
@@ -227,7 +228,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
             )
           ],
         ),
-        ),
+      ),
     );
   }
 
