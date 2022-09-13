@@ -57,78 +57,85 @@ class _HomePageState extends State<HomePage> {
     final list = context.select((HomeCubit cubit) => cubit.state.items);
     final item = list.firstWhereOrNull((element) =>
         element.start.date == DateFormat('yyyy-MM-dd').format(_selectedDate));
-    return Scaffold(
-      body: SafeArea(
-        child: Container(
-          //TODO: Add colors to container.
-          decoration: BoxDecoration(
-            color: Colors.white,
-          ),
+    return SafeArea(
+      child: Scaffold(
+        body: Container(
           child: Column(
             children: [
-              Stack(
-                alignment: Alignment.center,
-                children: [
-                  Align(
-                    widthFactor: 10,
-                    alignment: Alignment.centerLeft,
-                    child: ObxValue(
-                      (data) => DayNightSwitcherIcon(
-                        isDarkModeEnabled: _themeController.isLightTheme.value,
-                        onStateChanged: (state) {
-                          Get.isDarkMode
-                              ? commonToast("Switched to Light Theme")
-                              : commonToast("Switched to Dark Theme");
-                          _themeController.isLightTheme.value = state;
-                          Get.changeThemeMode(
-                            _themeController.isLightTheme.value
-                                ? ThemeMode.light
-                                : ThemeMode.dark,
-                          );
-                          _themeController.saveThemeStatus();
-                          //  _taskController.getThemeStatus(state);
-                        },
-                      ),
-                      false.obs,
-                    ),
-                  ),
-                  Center(
-                    child: Text(
-                      "Work-A-Bit",
-                      style: TextStyle(
-                        fontSize: 25,
-                        fontWeight: FontWeight.w800,
-                        color: Colors.teal.withOpacity(0.9),
-                      ),
-                    ),
-                  ),
-                  Align(
-                    widthFactor: 10,
-                    alignment: Alignment.centerRight,
-                    child: IconButton(onPressed: () => Navigator.pushNamed(context, "/stats"), icon: Icon(Icons.query_stats))
-                  )
-                ],
-              ),
-              _addTaskBar(item),
-              _addDateBar(list),
-              SizedBox(
-                height: 20,
-              ),
-              Expanded(
-                child: Container(
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                          topRight: Radius.circular(50),
-                          topLeft: Radius.circular(50))),
-                  child: Column(
-                    children: [
-                      _addEventsTab(),
-                      EventsOverviewPage(
-                        dateBarDate: _selectedDate,
-                      ),
-                    ],
+              Container(
+                decoration: BoxDecoration(
+                  color: Color(0xFF125252),
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(35),
+                    bottomRight: Radius.circular(35),
                   ),
                 ),
+                child: Column(
+                  children: [
+                    //Appbar
+                    Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Align(
+                          widthFactor: 10,
+                          alignment: Alignment.centerLeft,
+                          child: ObxValue(
+                            (data) => DayNightSwitcherIcon(
+                              isDarkModeEnabled:
+                                  _themeController.isLightTheme.value,
+                              onStateChanged: (state) {
+                                Get.isDarkMode
+                                    ? commonToast("Switched to Light Theme")
+                                    : commonToast("Switched to Dark Theme");
+                                _themeController.isLightTheme.value = state;
+                                Get.changeThemeMode(
+                                  _themeController.isLightTheme.value
+                                      ? ThemeMode.light
+                                      : ThemeMode.dark,
+                                );
+                                _themeController.saveThemeStatus();
+                                //  _taskController.getThemeStatus(state);
+                              },
+                            ),
+                            false.obs,
+                          ),
+                        ),
+                        Center(
+                          child: Text(
+                            "Work-A-Bit",
+                            style: TextStyle(
+                              fontSize: 25,
+                              fontWeight: FontWeight.w800,
+                              color: Color(0xFF6fddaf).withOpacity(0.9),
+                            ),
+                          ),
+                        ),
+                        Align(
+                          widthFactor: 10,
+                          alignment: Alignment.centerRight,
+                          child: IconButton(
+                            color: Color(0xFF6fddaf),
+                            onPressed: () =>
+                                Navigator.pushNamed(context, "/stats"),
+                            icon: Icon(Icons.query_stats),
+                          ),
+                        ),
+                      ],
+                    ),
+                    _addTaskBar(item),
+                    _addDateBar(list),
+                    SizedBox(
+                      height: 20,
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              _addEventsTab(),
+              EventsOverviewPage(
+                dateBarDate: _selectedDate,
               ),
             ],
           ),
@@ -138,18 +145,14 @@ class _HomePageState extends State<HomePage> {
   }
 
   _addEventsTab() {
-    return Container(
-      margin: const EdgeInsets.only(left: 20, right: 20),
+    return Padding(
+      padding: const EdgeInsets.only(left: 20, right: 20),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            "Events:-",
-            style: GoogleFonts.lato(
-              fontSize: 24,
-              color: Colors.teal.withOpacity(0.8),
-              fontWeight: FontWeight.bold,
-            ),
+            "Events :-",
+            style: subHeadingStyle,
           ),
           GestureDetector(
             onTap: () => Navigator.of(context).push(AddTaskPage.route()),
@@ -167,7 +170,7 @@ class _HomePageState extends State<HomePage> {
 
   _addDateBar(List<Items> list) {
     return Container(
-      margin: const EdgeInsets.only(top: 10, left: 20),
+      margin: const EdgeInsets.only(top: 10, left: 20, right: 20),
       child: DatePicker(
         DateTime(
           DateTime.now().year,
